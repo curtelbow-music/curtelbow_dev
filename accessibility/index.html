@@ -1,1 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Accessibility Statement — T-Muzziic Group</title>
+  <style>
+    :root { --bg:#CFFFD1; --fg:#0b0b0b; --max:840px; }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif}
+    .wrap{max-width:var(--max);margin:0 auto;padding:24px 20px 56px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .brand{font-family:"Permanent Marker",system-ui,sans-serif;font-size:28px}
+    a{color:#0b0b0b;text-decoration:underline}
+    h1{margin:18px 0 6px;font-size:28px}
+    h2{margin:24px 0 8px;font-size:20px}
+    footer{margin-top:32px;padding-top:16px;border-top:1px solid rgba(0,0,0,.2);font-size:14px}
+    .back{text-decoration:none;border:2px solid #000;border-radius:999px;padding:8px 12px;font-weight:700}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">CURT ELBOW</div>
+      <a class="back" href="/">← Back to Home</a>
+    </header>
+
+    <h1>Accessibility Statement</h1>
+    <p>
+      T-Muzziic Group is committed to providing a website that is accessible to the widest possible audience,
+      regardless of technology or ability. We aim to conform to <strong>WCAG 2.1 AA</strong> where feasible.
+    </p>
+
+    <h2>Measures we take</h2>
+    <ul>
+      <li>Clear color contrast and legible type.</li>
+      <li>Semantic HTML with landmarks for screen readers.</li>
+      <li>Keyboard navigable controls.</li>
+      <li>Captions or descriptions on video content when provided by the platform.</li>
+    </ul>
+
+    <h2>Feedback &amp; support</h2>
+    <p>If you experience difficulty with any content or require assistance, contact us:</p>
+    <p>Email: <a href="mailto:terrence@t-muzziic.com">terrence@t-muzziic.com</a></p>
+
+    <footer>
+      <div>© <span id="y"></span> T-Muzziic Group. All rights reserved.</div>
+      <div style="margin-top:10px">
+        <a href="/privacy/">Privacy</a> ·
+        <a href="/terms/">Terms</a> ·
+        <a href="/cookies/">Cookies</a> ·
+        <a href="/do-not-sell/">Do Not Sell/Share</a> ·
+        <a href="/accessibility/">Accessibility</a>
+      </div>
+    </footer>
+  </div>
+  <script>document.getElementById('y').textContent=new Date().getFullYear()</script>
+</body>
+</html>
 
