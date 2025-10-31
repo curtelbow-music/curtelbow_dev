@@ -21,307 +21,104 @@
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;background:#000;color:var(--fg);overflow-x:hidden}
     body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+    .badge{position:fixed;top:10px;right:10px;z-index:40;background:#0f0;color:#000;font-weight:700;font-size:12px;padding:4px 8px;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.35)}
 
-    .badge{
-      position:fixed;top:10px;right:10px;z-index:40;
-      background:#0f0;color:#000;font-weight:700;font-size:12px;
-      padding:4px 8px;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.35)
-    }
-
-    /* ===== HERO ===== */
-    .hero{
-      position:relative;height:100svh;
-      display:grid;place-items:center;overflow:hidden;
-    }
-    .hero__bg{
-      display:block;position:absolute;inset:0;
-      width:100%;height:100%;object-fit:cover;
-      z-index:1;opacity:.9;
-    }
-    .hero::after{
-      content:"";position:absolute;inset:0;
-      background:radial-gradient(1200px 600px at 50% 60%, rgba(0,0,0,.15), rgba(0,0,0,.55) 70%);
-      z-index:2;
-    }
-    .hero__content{
-      position:relative;z-index:3;text-align:center;padding:24px;
-    }
-    h1{
-      margin:0 0 10px;font-family:'Permanent Marker',cursive;letter-spacing:1px;
-      font-size:clamp(32px,6vw,72px);text-shadow:0 10px 30px rgba(0,0,0,.6)
-    }
-    .enter{
-      display:inline-flex;align-items:center;gap:8px;
-      background:var(--accent);color:#000;border:2px solid var(--accent);
-      border-radius:999px;padding:12px 18px;font-weight:800;letter-spacing:.4px;
-      text-decoration:none;transition:transform .12s ease, opacity .6s ease;
-      opacity:0;pointer-events:none;
-    }
+    /* HERO */
+    .hero{position:relative;height:100svh;display:grid;place-items:center;overflow:hidden;}
+    .hero__bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;opacity:.9;}
+    .hero::after{content:"";position:absolute;inset:0;background:radial-gradient(1200px 600px at 50% 60%,rgba(0,0,0,.15),rgba(0,0,0,.55) 70%);z-index:2;}
+    .hero__content{position:relative;z-index:3;text-align:center;padding:24px;}
+    h1{margin:0 0 10px;font-family:'Permanent Marker',cursive;letter-spacing:1px;font-size:clamp(32px,6vw,72px);text-shadow:0 10px 30px rgba(0,0,0,.6);}
+    .enter{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#000;border:2px solid var(--accent);border-radius:999px;padding:12px 18px;font-weight:800;letter-spacing:.4px;text-decoration:none;transition:transform .12s ease,opacity .6s ease;opacity:0;pointer-events:none;}
     .enter:hover{transform:translateY(-1px)}
 
-    /* ===== TRANSITION LAYER ===== */
-    .transition-layer{
-      position:fixed;inset:0;z-index:50;display:none;background:#000;
-      opacity:1;transition:opacity .5s ease;
-    }
-    .transition-layer.show{display:block}
-    .transition-layer.fade-out{opacity:0}
-    /* Dimmer that activates after video ends */
-    .transition-layer::after{
-      content:""; position:absolute; inset:0; z-index:1;
-      background:rgba(0,0,0,.0);           /* clear during playback */
-      transition:background .45s ease;
-    }
-    .transition-layer.dim::after{
-      background:rgba(0,0,0,.42);          /* darker once frozen */
-    }
-    .transition-layer video{
-      position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-    }
+    /* TRANSITION */
+    .transition-layer{position:fixed;inset:0;z-index:50;display:none;background:#000;opacity:1;transition:opacity .5s ease;}
+    .transition-layer.show{display:block;}
+    .transition-layer.fade-out{opacity:0;}
+    .transition-layer::after{content:"";position:absolute;inset:0;z-index:1;background:rgba(0,0,0,.0);transition:background .45s ease;}
+    .transition-layer.dim::after{background:rgba(0,0,0,.42);}
+    .transition-layer video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
 
-    /* Overlay menu on top of transition video (LEFT aligned) */
-    .transition-overlay{
-      position:absolute;inset:0;z-index:2;display:grid;
-      grid-template-columns: clamp(460px, 42vw, 860px) 1fr; /* left column wide */
-      align-items:center;padding:clamp(20px,4vw,40px);
-      pointer-events:none; /* disabled during playback */
-    }
-    .transition-overlay.interactive{pointer-events:auto}
-
-    .overlay-slab{
-      justify-self:start;
-      transform:perspective(1600px) rotateY(14deg) skewX(2deg) translateX(1vw);
-    }
-    .overlay-stack{display:flex;flex-direction:column;gap:clamp(6px,1.2vw,16px);line-height:.86}
-    .overlay-link{
-      display:block;text-decoration:none;color:var(--fg);
-      font-family:'Permanent Marker',cursive;font-weight:400;
-      font-size:clamp(36px,12vw,180px);  /* slightly smaller */
-      letter-spacing:.5px;text-transform:uppercase;
-      margin:0;opacity:0;transform:translateY(18px) scale(.98);
-      transition:opacity .8s ease, transform .8s ease, color .2s ease;
-      cursor:default; /* while disabled */
-    }
-    .overlay-link.stroke{
-      color:transparent;
-      -webkit-text-stroke:clamp(2px,.45vw,7px) var(--stroke);
-              text-stroke:clamp(2px,.45vw,7px) var(--stroke);
-    }
-    .overlay-link.in{opacity:1;transform:translateY(0) scale(1)}
-    .transition-overlay.interactive .overlay-link{cursor:pointer}
-    .transition-overlay.interactive .overlay-link:hover{color:var(--accent)}
-
-    /* ===== OPTIONAL MAIN SECTION BELOW ===== */
-    .mega-tilt{
-      min-height:100vh;position:relative;display:grid;
-      grid-template-columns:1fr clamp(540px,62vw,1400px);
-      align-items:center;padding:clamp(20px,4vw,40px);
-      perspective:1600px;
-    }
-    .slab{
-      justify-self:end;
-      transform:rotateY(-26deg) skewX(-6deg) translateX(2vw);
-      transform-origin:right center;
-    }
-    .stack{display:flex;flex-direction:column;gap:clamp(6px,1.2vw,16px);line-height:.86}
-    .row{
-      --tx:0px; --ty:22px; --sc:.90; --op:0;
-      position:relative;display:block;text-decoration:none;color:var(--fg);
-      font-family:'Permanent Marker',cursive;font-weight:400;
-      font-size:clamp(64px,19vw,380px);letter-spacing:.5px;text-transform:uppercase;
-      transform:translate3d(var(--tx),var(--ty),0) scale(var(--sc));
-      opacity:var(--op);
-      transition:transform .6s cubic-bezier(.2,.8,.2,1),opacity .6s ease,color .25s ease;
-    }
-    .row--stroke{
-      color:transparent;
-      -webkit-text-stroke:clamp(2px,.5vw,8px) var(--stroke);
-              text-stroke:clamp(2px,.5vw,8px) var(--stroke);
-    }
-    .row.in{--ty:0px;--op:1}
-    .row:hover{
-      color:var(--accent);
-      transform:translate3d(calc(var(--tx) + 8px), var(--ty), 0) scale(calc(var(--sc) + .01));
-    }
-
-    @media (max-width:780px){
-      .mega-tilt{grid-template-columns:1fr;padding-inline:16px}
-      .slab{transform:rotateY(-18deg) skewX(-4deg)}
-      .row{font-size:clamp(46px,22vw,120px)}
-    }
-
-    @media (prefers-reduced-motion:reduce){
-      .slab{transform:none !important}
-      .row{transition:none !important;transform:none !important;opacity:1 !important}
-      .transition-overlay{display:none !important}
-    }
+    .transition-overlay{position:absolute;inset:0;z-index:2;display:grid;grid-template-columns:clamp(460px,42vw,860px) 1fr;align-items:center;padding:clamp(20px,4vw,40px);pointer-events:none;}
+    .transition-overlay.interactive{pointer-events:auto;}
+    .overlay-slab{justify-self:start;transform:perspective(1600px) rotateY(14deg) skewX(2deg) translateX(1vw);}
+    .overlay-stack{display:flex;flex-direction:column;gap:clamp(6px,1.2vw,16px);line-height:.86;}
+    .overlay-link{display:block;text-decoration:none;color:var(--fg);font-family:'Permanent Marker',cursive;font-weight:400;font-size:clamp(36px,12vw,180px);letter-spacing:.5px;text-transform:uppercase;margin:0;opacity:0;transform:translateY(18px) scale(.98);transition:opacity .8s ease,transform .8s ease,color .2s ease;cursor:default;}
+    .overlay-link.stroke{color:transparent;-webkit-text-stroke:clamp(2px,.45vw,7px) var(--stroke);text-stroke:clamp(2px,.45vw,7px) var(--stroke);}
+    .overlay-link.in{opacity:1;transform:translateY(0) scale(1);}
+    .transition-overlay.interactive .overlay-link{cursor:pointer;}
+    .transition-overlay.interactive .overlay-link:hover{color:var(--accent);}
   </style>
 </head>
 
 <body>
   <div class="badge">STAGING (dev)</div>
 
-  <!-- ===== HERO ===== -->
-  <header class="hero" id="top">
-    <video
-      class="hero__bg"
-      id="introVideo"
-      src="./media/green_intro.mp4"
-      autoplay
-      muted
-      playsinline
-      preload="auto"
-      poster="data:image/gif;base64,R0lGODlhAQABAAAAACw=">
-    </video>
-
+  <!-- HERO -->
+  <header class="hero">
+    <video class="hero__bg" id="introVideo" src="./media/green_intro.mp4" autoplay muted playsinline preload="auto"></video>
     <div class="hero__content">
       <h1>CURT ELBOW</h1>
       <a class="enter" href="#menu"><span>Enter</span> ↓</a>
     </div>
   </header>
 
-  <!-- ===== TRANSITION (freeze + darken + interactive overlay) ===== -->
+  <!-- TRANSITION LAYER -->
   <div class="transition-layer" id="transition">
     <video id="transitionVid" src="./media/transition_video.mp4" muted playsinline preload="auto"></video>
-
     <div class="transition-overlay" id="transitionOverlay" aria-hidden="true">
       <div></div>
       <div class="overlay-slab">
         <div class="overlay-stack" id="overlayStack">
-          <a class="overlay-link stroke" href="#listen">Music</a>
-          <a class="overlay-link"        href="#video">Video</a>
-          <a class="overlay-link"        href="#merch">Merch</a>
+          <a class="overlay-link stroke" href="#music">Music</a>
+          <a class="overlay-link" href="./video.html">Video</a> <!-- ✅ now links to your new video page -->
+          <a class="overlay-link" href="#merch">Merch</a>
           <a class="overlay-link stroke" href="#about">About</a>
-          <a class="overlay-link"        href="#connect">Connect</a>
+          <a class="overlay-link" href="#connect">Connect</a>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ===== SECTIONS (scroll targets) ===== -->
-  <section id="listen"  class="mega-tilt" aria-label="Music">
-    <div></div>
-    <div class="slab">
-      <div class="stack" id="menuStackListen">
-        <a class="row row--stroke" href="#listen"><span>Music</span></a>
-      </div>
-    </div>
-  </section>
-  <section id="video"   style="height:100vh"></section>
-  <section id="merch"   style="height:100vh"></section>
-  <section id="about"   style="height:100vh"></section>
-  <section id="connect" style="height:100vh"></section>
-
   <script>
   (function(){
-    const intro = document.getElementById('introVideo');
-    const enter = document.querySelector('.enter');
+    const intro=document.getElementById('introVideo');
+    const enter=document.querySelector('.enter');
+    const transWrap=document.getElementById('transition');
+    const transVid=document.getElementById('transitionVid');
+    const overlay=document.getElementById('transitionOverlay');
+    const overlayLinks=Array.from(document.querySelectorAll('.overlay-link'));
 
-    const transWrap = document.getElementById('transition');
-    const transVid  = document.getElementById('transitionVid');
-    const overlay   = document.getElementById('transitionOverlay');
-    const overlayLinks = Array.from(document.querySelectorAll('.overlay-link'));
+    // autoplay
+    intro.muted=true;intro.playsInline=true;intro.play().catch(()=>{});
+    const showEnter=()=>{enter.style.opacity=1;enter.style.pointerEvents='auto';};
+    intro.addEventListener('ended',showEnter,{once:true});
+    setTimeout(showEnter,10000);
 
-    // Ensure intro autoplays on mobile
-    intro.muted = true;
-    intro.setAttribute('muted','');
-    intro.setAttribute('playsinline','');
-    intro.playsInline = true;
-    const startIntro = ()=> intro.play().catch(()=>{});
-    if (intro.readyState >= 2) startIntro();
-    else intro.addEventListener('canplay', startIntro, { once:true });
-    setTimeout(startIntro, 1200);
-
-    // Reveal Enter when intro ends (fallback at 10s)
-    function showEnter(){
-      enter.style.transition = 'opacity 0.8s ease';
-      enter.style.opacity = 1;
-      enter.style.pointerEvents = 'auto';
-    }
-    enter.style.opacity = 0;
-    enter.style.pointerEvents = 'none';
-    intro.addEventListener('ended', showEnter, { once:true });
-    setTimeout(showEnter, 10000);
-
-    // Enter → play transition; on end freeze + dim + enable overlay
-    function onEnter(e){
+    // enter click
+    enter.addEventListener('click',e=>{
       e.preventDefault();
       transWrap.classList.add('show');
-      transVid.currentTime = 0;
-
-      // Stagger in menu words
-      overlayLinks.forEach((el, i) => {
-        el.classList.remove('in');
-        setTimeout(()=> el.classList.add('in'), i * 110);
-      });
-
+      transVid.currentTime=0;
+      overlayLinks.forEach((el,i)=>{el.classList.remove('in');setTimeout(()=>el.classList.add('in'),i*110);});
       transVid.play().catch(()=>{});
-
-      const onEnd = ()=>{
-        transVid.removeEventListener('ended', onEnd);
-
-        // Freeze on last frame
-        try { transVid.currentTime = Math.max(0, transVid.duration - 0.05); } catch(e){}
-        transVid.pause();
-
-        // Darken now for legibility
+      transVid.addEventListener('ended',()=>{
         transWrap.classList.add('dim');
-
-        // Make overlay interactive
         overlay.classList.add('interactive');
-      };
-      transVid.addEventListener('ended', onEnd, { once:true });
+        transVid.pause();
+      },{once:true});
+    });
 
-      // Fallback if play fails
-      setTimeout(()=>{ if(!transVid.paused) return; onEnd(); }, 2500);
-    }
-    enter.addEventListener('click', onEnter);
-
-    // Overlay clicks: fade out transition layer then scroll
-    function handleOverlayClick(ev){
-      const href = this.getAttribute('href');
-      if (!href || !href.startsWith('#')) return;
-
-      ev.preventDefault();
-      const target = document.querySelector(href);
-      if (!target) return;
-
-      transWrap.classList.add('fade-out');
-      setTimeout(()=>{
-        transWrap.classList.remove('show','fade-out','dim');
-        overlay.classList.remove('interactive');
-        target.scrollIntoView({ behavior:'smooth' });
-      }, 450);
-    }
-    overlayLinks.forEach(a => a.addEventListener('click', handleOverlayClick));
-
-    // Optional: reveal text in sections
-    const rows = Array.from(document.querySelectorAll('.row'));
-    const io = new IntersectionObserver((entries)=>{
-      entries.forEach(entry=>{
-        if(entry.isIntersecting){
-          rows.forEach((r,i)=> setTimeout(()=> r.classList.add('in'), i*120));
-          io.unobserve(entry.target);
-        }
+    // fadeout on internal link click
+    overlayLinks.forEach(link=>{
+      link.addEventListener('click',e=>{
+        const href=link.getAttribute('href');
+        if(href.startsWith('#')){e.preventDefault();}
+        transWrap.classList.add('fade-out');
+        setTimeout(()=>{transWrap.classList.remove('show','fade-out','dim');overlay.classList.remove('interactive');},450);
       });
-    },{ threshold:0.2 });
-    const menuStackListen = document.getElementById('menuStackListen');
-    if (menuStackListen) io.observe(menuStackListen);
-
-    // Simple tilt effect
-    function updateTilt(){
-      const slab = document.querySelector('.slab');
-      if (!slab) return;
-      const y=window.scrollY||document.documentElement.scrollTop;
-      const h=document.documentElement.scrollHeight-window.innerHeight;
-      const t=h>0?(y/h):0;
-      const baseRotY=-26, baseSkew=-6;
-      const ry=baseRotY+(t*6);
-      const skew=baseSkew+(t*2);
-      slab.style.transform=`rotateY(${ry}deg) skewX(${skew}deg) translateX(2vw)`;
-    }
-    window.addEventListener('scroll', ()=> requestAnimationFrame(updateTilt), {passive:true});
-    window.addEventListener('resize', ()=> requestAnimationFrame(updateTilt), {passive:true});
+    });
   })();
   </script>
 </body>
