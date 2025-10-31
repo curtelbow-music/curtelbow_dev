@@ -31,11 +31,13 @@
     /* HERO */
     .hero{
       position:relative;height:100svh;
-      display:grid;place-items:center;overflow:hidden
+      display:grid;place-items:center;overflow:hidden;
     }
-    .hero video{
+    .hero__bg{
+      display:block;
       position:absolute;inset:0;
-      width:100%;height:100%;object-fit:cover;z-index:1;opacity:.9
+      width:100%;height:100%;object-fit:cover;
+      z-index:1;opacity:.9;
     }
     .hero::after{
       content:"";position:absolute;inset:0;
@@ -59,12 +61,12 @@
     }
     .enter:hover{transform:translateY(-1px)}
 
-    /* TRANSITION OVERLAY */
+    /* TRANSITION */
     .transition-layer{
-      position:fixed;inset:0;z-index:50;display:none;background:#000
+      position:fixed;inset:0;z-index:50;display:none;background:#000;
     }
     .transition-layer video{
-      position:absolute;inset:0;width:100%;height:100%;object-fit:cover
+      position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
     }
 
     /* MENU */
@@ -72,7 +74,7 @@
       min-height:100vh;position:relative;display:grid;
       grid-template-columns:1fr clamp(540px,62vw,1400px);
       align-items:center;padding:clamp(20px,4vw,40px);
-      perspective:1600px
+      perspective:1600px;
     }
     .slab{
       justify-self:end;
@@ -87,7 +89,7 @@
       font-size:clamp(64px,19vw,380px);letter-spacing:.5px;text-transform:uppercase;
       transform:translate3d(var(--tx),var(--ty),0) scale(var(--sc));
       opacity:var(--op);
-      transition:transform .6s cubic-bezier(.2,.8,.2,1),opacity .6s ease,color .25s ease
+      transition:transform .6s cubic-bezier(.2,.8,.2,1),opacity .6s ease,color .25s ease;
     }
     .row--stroke{
       color:transparent;
@@ -119,8 +121,9 @@
   <!-- HERO -->
   <header class="hero" id="top">
     <video
+      class="hero__bg"
       id="introVideo"
-      src="./media/green_intro.mp4"
+      src="./media/green_intro.mp4?v=2"
       autoplay
       muted
       playsinline
@@ -170,42 +173,50 @@
     const rows = Array.from(document.querySelectorAll('.row'));
     const slab = document.querySelector('.slab');
 
-    // Fade in Enter after intro video ends (or fallback)
-    enter.style.opacity = 0; enter.style.pointerEvents = 'none';
+    // Force autoplay and fix iOS quirks
+    intro.muted = true;
+    intro.setAttribute('muted','');
+    intro.setAttribute('playsinline','');
+    intro.playsInline = true;
+    const start = ()=> intro.play().catch(err => console.warn('Autoplay blocked:', err));
+    if(intro.readyState>=2) start();
+    else intro.addEventListener('canplay', start, {once:true});
+    setTimeout(start,1200);
+
+    // Fade in Enter after intro ends (or fallback timer)
     function showEnter(){
       enter.style.transition = 'opacity 0.8s ease';
       enter.style.opacity = 1;
       enter.style.pointerEvents = 'auto';
     }
     intro.addEventListener('ended', showEnter, {once:true});
-    setTimeout(showEnter, 10000);
+    setTimeout(showEnter, 10000); // fallback
 
-    // Enter behavior: play transition overlay, then reveal menu
+    // Enter click → play transition video → scroll
     function playTransitionThenScroll(e){
       e.preventDefault();
       transWrap.style.display = 'block';
       transVid.currentTime = 0;
       transVid.play().catch(()=>{});
-
       const finish = ()=>{
         transVid.removeEventListener('ended', finish);
         transWrap.style.display = 'none';
         menu.scrollIntoView({behavior:'smooth'});
       };
       transVid.addEventListener('ended', finish, {once:true});
-      setTimeout(()=>{ if(!transVid.paused) return; finish(); }, 2500);
+      setTimeout(()=>{if(!transVid.paused)return;finish();},2500);
     }
     enter.addEventListener('click', playTransitionThenScroll);
 
-    // Staggered reveal for menu
+    // Menu animation
     const io = new IntersectionObserver((entries)=>{
       entries.forEach(entry=>{
         if(entry.isIntersecting){
-          rows.forEach((r,i)=> setTimeout(()=>r.classList.add('in'), i*120));
+          rows.forEach((r,i)=>setTimeout(()=>r.classList.add('in'),i*120));
           io.unobserve(entry.target);
         }
       });
-    }, {threshold:0.2});
+    },{threshold:0.2});
     io.observe(document.getElementById('menuStack'));
 
     // Tilt motion
@@ -218,8 +229,8 @@
       const skew=baseSkew+(t*2);
       slab.style.transform=`rotateY(${ry}deg) skewX(${skew}deg) translateX(2vw)`;
     }
-    window.addEventListener('scroll', ()=>requestAnimationFrame(updateTilt), {passive:true});
-    window.addEventListener('resize', ()=>requestAnimationFrame(updateTilt), {passive:true});
+    window.addEventListener('scroll',()=>requestAnimationFrame(updateTilt),{passive:true});
+    window.addEventListener('resize',()=>requestAnimationFrame(updateTilt),{passive:true});
   })();
   </script>
 </body>
