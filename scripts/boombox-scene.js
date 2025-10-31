@@ -1,140 +1,100 @@
 // boombox-scene.js
-// Rotating 3D boombox with subtle glow, mouse parallax, and safe fallbacks.
+// Dev build for Curt Elbow (Trap Worship · Faith over Fear)
 
-(function initBoomboxScene() {
-  // THREE safety check (so dev never hard-crashes)
-  if (typeof window.THREE === "undefined") {
+(function () {
+  console.log("[boombox] Initializing 3D scene...");
+
+  // Ensure THREE.js loaded first
+  if (typeof THREE === "undefined") {
     console.warn("[boombox] THREE not found. Skipping 3D scene.");
     return;
   }
-  const THREE = window.THREE;
 
-  // Container overlay (stays above video, below UI)
-  const container = document.createElement('div');
-  container.style.position = 'absolute';
-  container.style.inset = '0';
-  container.style.zIndex = '1';
-  container.style.pointerEvents = 'none'; // let UI pass through
-  document.body.appendChild(container);
-
-  // Scene / camera / renderer
+  // === Scene Setup ===
   const scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x050505, 0.16);
+  scene.background = new THREE.Color(0x000000);
 
   const camera = new THREE.PerspectiveCamera(
-    60,
+    50,
     window.innerWidth / window.innerHeight,
     0.1,
-    100
+    1000
   );
-  camera.position.set(0, 1.2, 4);
+  camera.position.z = 6;
 
-  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  container.appendChild(renderer.domElement);
+  renderer.domElement.style.position = "absolute";
+  renderer.domElement.style.inset = "0";
+  renderer.domElement.style.zIndex = "2";
+  document.body.appendChild(renderer.domElement);
 
-  // Lights
-  const ambient = new THREE.AmbientLight(0x66ff99, 0.9);
-  const key = new THREE.PointLight(0x32cd32, 1.6, 20);
-  key.position.set(0, 2, 3);
-  const rim = new THREE.PointLight(0x0bb90b, 0.9, 18);
-  rim.position.set(-2.2, 1.2, -2.2);
-  scene.add(ambient, key, rim);
+  // === Lighting ===
+  const light = new THREE.PointLight(0x00ff00, 1.5, 30);
+  light.position.set(5, 5, 5);
+  scene.add(light);
 
-  // Boombox core
-  const boxMat = new THREE.MeshStandardMaterial({
-    color: 0x0f0f0f,
-    metalness: 0.65,
-    roughness: 0.35,
-    emissive: 0x002200,
-    emissiveIntensity: 0.65
+  const ambient = new THREE.AmbientLight(0x00ff33, 0.2);
+  scene.add(ambient);
+
+  // === Boombox Core ===
+  const boxGeometry = new THREE.BoxGeometry(4, 2, 1.2);
+  const boxMaterial = new THREE.MeshStandardMaterial({
+    color: 0x003300,
+    emissive: 0x00ff00,
+    emissiveIntensity: 0.15,
+    metalness: 0.2,
+    roughness: 0.6,
   });
-  const boxGeo = new THREE.BoxGeometry(3, 1.5, 1);
-  const boombox = new THREE.Mesh(boxGeo, boxMat);
+  const boombox = new THREE.Mesh(boxGeometry, boxMaterial);
+  boombox.scale.set(0.7, 0.7, 0.7);
   scene.add(boombox);
 
-  // Face panel (slight bevel look)
-  const faceMat = new THREE.MeshStandardMaterial({
-    color: 0x101010,
-    metalness: 0.5,
-    roughness: 0.25
+  // === Speaker Details ===
+  const speakerGeometry = new THREE.CylinderGeometry(0.5, 0.5, 0.2, 32);
+  const speakerMaterial = new THREE.MeshStandardMaterial({
+    color: 0x00ff00,
+    emissive: 0x00ff00,
+    emissiveIntensity: 0.8,
   });
-  const faceGeo = new THREE.BoxGeometry(2.8, 1.3, 0.04);
-  const face = new THREE.Mesh(faceGeo, faceMat);
-  face.position.set(0, 0, 0.53);
-  boombox.add(face);
 
-  // Speakers
-  const speakerMat = new THREE.MeshStandardMaterial({
-    color: 0x1fea1f,
-    emissive: 0x1fea1f,
-    emissiveIntensity: 1.25
-  });
-  const speakerGeo = new THREE.CylinderGeometry(0.4, 0.4, 0.2, 40);
-  const leftSpeaker = new THREE.Mesh(speakerGeo, speakerMat);
+  const leftSpeaker = new THREE.Mesh(speakerGeometry, speakerMaterial);
   const rightSpeaker = leftSpeaker.clone();
+
   leftSpeaker.rotation.x = Math.PI / 2;
   rightSpeaker.rotation.x = Math.PI / 2;
-  leftSpeaker.position.set(-1.05, 0, 0.58);
-  rightSpeaker.position.set(1.05, 0, 0.58);
-  boombox.add(leftSpeaker, rightSpeaker);
 
-  // Handle
-  const handleMat = new THREE.MeshStandardMaterial({ color: 0x32cd32, metalness: 0.3 });
-  const handleGeo = new THREE.BoxGeometry(1.8, 0.15, 0.15);
-  const handle = new THREE.Mesh(handleGeo, handleMat);
-  handle.position.set(0, 0.9, 0.05);
-  boombox.add(handle);
+  leftSpeaker.position.set(-1.2, 0, 0.55);
+  rightSpeaker.position.set(1.2, 0, 0.55);
 
-  // Subtle ground (for depth cues)
-  const groundGeo = new THREE.PlaneGeometry(40, 40);
-  const groundMat = new THREE.MeshStandardMaterial({ color: 0x040604, roughness: 1, metalness: 0 });
-  const ground = new THREE.Mesh(groundGeo, groundMat);
-  ground.rotation.x = -Math.PI / 2;
-  ground.position.y = -1.2;
-  scene.add(ground);
+  boombox.add(leftSpeaker);
+  boombox.add(rightSpeaker);
 
-  // Parallax via mouse (gentle)
-  let targetRotX = 0, targetRotY = 0;
-  const MAX_ROT_X = 0.18; // ~10deg
-  const MAX_ROT_Y = 0.30; // ~17deg
-
-  function onMouseMove(e) {
-    const nx = (e.clientX / window.innerWidth) * 2 - 1; // -1..1
-    const ny = (e.clientY / window.innerHeight) * 2 - 1;
-    targetRotY = -nx * MAX_ROT_Y;
-    targetRotX = ny * MAX_ROT_X;
-  }
-  window.addEventListener('mousemove', onMouseMove, { passive: true });
-
-  // Resize
-  function onResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  }
-  window.addEventListener('resize', onResize);
-
-  // Animate
-  let last = performance.now();
-  function animate(now) {
+  // === Animation ===
+  function animate() {
     requestAnimationFrame(animate);
-    const dt = Math.min((now - last) / 1000, 0.033);
-    last = now;
 
-    // Ease toward mouse targets
-    boombox.rotation.x += (targetRotX - boombox.rotation.x) * 0.07;
-    boombox.rotation.y += (targetRotY - boombox.rotation.y) * 0.07;
+    // Subtle motion
+    boombox.rotation.y += 0.002;
+    boombox.rotation.x = Math.sin(Date.now() * 0.0003) * 0.05;
 
-    // Gentle idle motion (if mouse idle)
-    boombox.rotation.y += 0.005 * (1 - Math.abs(targetRotY) / MAX_ROT_Y) * dt * 60;
-
-    // Speaker sparkle
-    leftSpeaker.rotation.z += 0.015;
-    rightSpeaker.rotation.z -= 0.015;
+    // Light pulse (like audio reactivity)
+    light.intensity = 1.3 + Math.sin(Date.now() * 0.004) * 0.25;
+    boombox.material.emissiveIntensity =
+      0.2 + Math.abs(Math.sin(Date.now() * 0.003)) * 0.2;
 
     renderer.render(scene, camera);
   }
-  requestAnimationFrame(animate);
+
+  animate();
+
+  // === Responsiveness ===
+  window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  console.log("[boombox] Scene ready ✅");
 })();
