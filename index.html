@@ -28,7 +28,7 @@
       padding:4px 8px;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.35)
     }
 
-    /* HERO */
+    /* ===== HERO ===== */
     .hero{
       position:relative;height:100svh;
       display:grid;place-items:center;overflow:hidden;
@@ -59,47 +59,59 @@
     }
     .enter:hover{transform:translateY(-1px)}
 
-    /* TRANSITION LAYER */
+    /* ===== TRANSITION LAYER ===== */
     .transition-layer{
       position:fixed;inset:0;z-index:50;display:none;background:#000;
       opacity:1;transition:opacity .5s ease;
     }
     .transition-layer.show{display:block}
     .transition-layer.fade-out{opacity:0}
+    /* Dimmer that activates after video ends */
+    .transition-layer::after{
+      content:""; position:absolute; inset:0; z-index:1;
+      background:rgba(0,0,0,.0);           /* clear during playback */
+      transition:background .45s ease;
+    }
+    .transition-layer.dim::after{
+      background:rgba(0,0,0,.42);          /* darker once frozen */
+    }
     .transition-layer video{
       position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
     }
-    /* Overlay menu over the transition video */
+
+    /* Overlay menu on top of transition video (LEFT aligned) */
     .transition-overlay{
       position:absolute;inset:0;z-index:2;display:grid;
-      grid-template-columns:1fr clamp(540px,62vw,1400px);
+      grid-template-columns: clamp(460px, 42vw, 860px) 1fr; /* left column wide */
       align-items:center;padding:clamp(20px,4vw,40px);
       pointer-events:none; /* disabled during playback */
     }
     .transition-overlay.interactive{pointer-events:auto}
+
     .overlay-slab{
-      justify-self:end;
-      transform:perspective(1600px) rotateY(-22deg) skewX(-4deg) translateX(2vw);
+      justify-self:start;
+      transform:perspective(1600px) rotateY(14deg) skewX(2deg) translateX(1vw);
     }
     .overlay-stack{display:flex;flex-direction:column;gap:clamp(6px,1.2vw,16px);line-height:.86}
     .overlay-link{
       display:block;text-decoration:none;color:var(--fg);
       font-family:'Permanent Marker',cursive;font-weight:400;
-      font-size:clamp(40px,14vw,220px);letter-spacing:.5px;text-transform:uppercase;
+      font-size:clamp(36px,12vw,180px);  /* slightly smaller */
+      letter-spacing:.5px;text-transform:uppercase;
       margin:0;opacity:0;transform:translateY(18px) scale(.98);
       transition:opacity .8s ease, transform .8s ease, color .2s ease;
       cursor:default; /* while disabled */
     }
     .overlay-link.stroke{
       color:transparent;
-      -webkit-text-stroke:clamp(2px,.5vw,8px) var(--stroke);
-              text-stroke:clamp(2px,.5vw,8px) var(--stroke);
+      -webkit-text-stroke:clamp(2px,.45vw,7px) var(--stroke);
+              text-stroke:clamp(2px,.45vw,7px) var(--stroke);
     }
     .overlay-link.in{opacity:1;transform:translateY(0) scale(1)}
     .transition-overlay.interactive .overlay-link{cursor:pointer}
     .transition-overlay.interactive .overlay-link:hover{color:var(--accent)}
 
-    /* (Optional) Main menu below for deep sections */
+    /* ===== OPTIONAL MAIN SECTION BELOW ===== */
     .mega-tilt{
       min-height:100vh;position:relative;display:grid;
       grid-template-columns:1fr clamp(540px,62vw,1400px);
@@ -149,7 +161,7 @@
 <body>
   <div class="badge">STAGING (dev)</div>
 
-  <!-- HERO -->
+  <!-- ===== HERO ===== -->
   <header class="hero" id="top">
     <video
       class="hero__bg"
@@ -168,7 +180,7 @@
     </div>
   </header>
 
-  <!-- TRANSITION (stays on last frame; menu becomes clickable) -->
+  <!-- ===== TRANSITION (freeze + darken + interactive overlay) ===== -->
   <div class="transition-layer" id="transition">
     <video id="transitionVid" src="./media/transition_video.mp4" muted playsinline preload="auto"></video>
 
@@ -186,7 +198,7 @@
     </div>
   </div>
 
-  <!-- Sections (scroll targets) -->
+  <!-- ===== SECTIONS (scroll targets) ===== -->
   <section id="listen"  class="mega-tilt" aria-label="Music">
     <div></div>
     <div class="slab">
@@ -220,7 +232,7 @@
     else intro.addEventListener('canplay', startIntro, { once:true });
     setTimeout(startIntro, 1200);
 
-    // Fade Enter after intro ends (fallback 10s)
+    // Reveal Enter when intro ends (fallback at 10s)
     function showEnter(){
       enter.style.transition = 'opacity 0.8s ease';
       enter.style.opacity = 1;
@@ -231,29 +243,31 @@
     intro.addEventListener('ended', showEnter, { once:true });
     setTimeout(showEnter, 10000);
 
-    // Enter click → play transition; on end, keep final frame and enable overlay clicks
+    // Enter → play transition; on end freeze + dim + enable overlay
     function onEnter(e){
       e.preventDefault();
       transWrap.classList.add('show');
       transVid.currentTime = 0;
 
-      // Stagger in menu words during playback
+      // Stagger in menu words
       overlayLinks.forEach((el, i) => {
         el.classList.remove('in');
-        setTimeout(()=> el.classList.add('in'), i * 140);
+        setTimeout(()=> el.classList.add('in'), i * 110);
       });
 
-      // Play transition
       transVid.play().catch(()=>{});
 
       const onEnd = ()=>{
         transVid.removeEventListener('ended', onEnd);
 
-        // Freeze on last frame (most browsers keep the last painted frame)
+        // Freeze on last frame
         try { transVid.currentTime = Math.max(0, transVid.duration - 0.05); } catch(e){}
         transVid.pause();
 
-        // Make overlay interactive now
+        // Darken now for legibility
+        transWrap.classList.add('dim');
+
+        // Make overlay interactive
         overlay.classList.add('interactive');
       };
       transVid.addEventListener('ended', onEnd, { once:true });
@@ -263,7 +277,7 @@
     }
     enter.addEventListener('click', onEnter);
 
-    // When a menu item is clicked on the overlay, fade out the layer and scroll
+    // Overlay clicks: fade out transition layer then scroll
     function handleOverlayClick(ev){
       const href = this.getAttribute('href');
       if (!href || !href.startsWith('#')) return;
@@ -272,17 +286,16 @@
       const target = document.querySelector(href);
       if (!target) return;
 
-      // Fade out the transition layer, then scroll
       transWrap.classList.add('fade-out');
       setTimeout(()=>{
-        transWrap.classList.remove('show','fade-out');
+        transWrap.classList.remove('show','fade-out','dim');
         overlay.classList.remove('interactive');
         target.scrollIntoView({ behavior:'smooth' });
       }, 450);
     }
     overlayLinks.forEach(a => a.addEventListener('click', handleOverlayClick));
 
-    // (Optional) Reveal text inside sections as they come into view
+    // Optional: reveal text in sections
     const rows = Array.from(document.querySelectorAll('.row'));
     const io = new IntersectionObserver((entries)=>{
       entries.forEach(entry=>{
@@ -295,7 +308,7 @@
     const menuStackListen = document.getElementById('menuStackListen');
     if (menuStackListen) io.observe(menuStackListen);
 
-    // Simple tilt on scroll for sections using .slab
+    // Simple tilt effect
     function updateTilt(){
       const slab = document.querySelector('.slab');
       if (!slab) return;
