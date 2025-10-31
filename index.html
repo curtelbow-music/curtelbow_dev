@@ -59,15 +59,41 @@
     }
     .enter:hover{transform:translateY(-1px)}
 
-    /* TRANSITION */
+    /* TRANSITION LAYER (full screen) */
     .transition-layer{
       position:fixed;inset:0;z-index:50;display:none;background:#000;
     }
     .transition-layer video{
       position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
     }
+    /* Overlay menu words on top of transition video */
+    .transition-overlay{
+      position:absolute;inset:0;z-index:2;display:grid;
+      grid-template-columns:1fr clamp(540px,62vw,1400px);
+      align-items:center;padding:clamp(20px,4vw,40px);
+      pointer-events:none; /* non-interactive during transition */
+    }
+    .overlay-slab{
+      justify-self:end;
+      transform:perspective(1600px) rotateY(-22deg) skewX(-4deg) translateX(2vw);
+    }
+    .overlay-stack{display:flex;flex-direction:column;gap:clamp(6px,1.2vw,16px);line-height:.86}
+    .overlay-row{
+      color:var(--fg);
+      font-family:'Permanent Marker',cursive;font-weight:400;
+      font-size:clamp(40px,14vw,220px);letter-spacing:.5px;text-transform:uppercase;
+      margin:0;opacity:0;transform:translateY(18px) scale(.98);
+      transition:opacity .8s ease, transform .8s ease;
+      text-decoration:none;
+    }
+    .overlay-row.stroke{
+      color:transparent;
+      -webkit-text-stroke:clamp(2px,.5vw,8px) var(--stroke);
+              text-stroke:clamp(2px,.5vw,8px) var(--stroke);
+    }
+    .overlay-row.in{opacity:1;transform:translateY(0) scale(1)}
 
-    /* MENU */
+    /* MAIN MENU (tilted, interactive) */
     .mega-tilt{
       min-height:100vh;position:relative;display:grid;
       grid-template-columns:1fr clamp(540px,62vw,1400px);
@@ -92,7 +118,7 @@
     .row--stroke{
       color:transparent;
       -webkit-text-stroke:clamp(2px,.5vw,8px) var(--stroke);
-      text-stroke:clamp(2px,.5vw,8px) var(--stroke);
+              text-stroke:clamp(2px,.5vw,8px) var(--stroke);
     }
     .row.in{--ty:0px;--op:1}
     .row:hover{
@@ -109,6 +135,7 @@
     @media (prefers-reduced-motion:reduce){
       .slab{transform:none !important}
       .row{transition:none !important;transform:none !important;opacity:1 !important}
+      .transition-overlay{display:none !important}
     }
   </style>
 </head>
@@ -116,7 +143,7 @@
 <body>
   <div class="badge">STAGING (dev)</div>
 
-  <!-- HERO -->
+  <!-- HERO (intro video plays once, shows Enter when done) -->
   <header class="hero" id="top">
     <video
       class="hero__bg"
@@ -135,12 +162,25 @@
     </div>
   </header>
 
-  <!-- TRANSITION -->
+  <!-- TRANSITION (video + overlay menu words) -->
   <div class="transition-layer" id="transition">
     <video id="transitionVid" src="./media/transition_video.mp4" muted playsinline preload="auto"></video>
+
+    <div class="transition-overlay" aria-hidden="true">
+      <div></div>
+      <div class="overlay-slab">
+        <div class="overlay-stack" id="overlayStack">
+          <span class="overlay-row stroke">Music</span>
+          <span class="overlay-row">Video</span>
+          <span class="overlay-row">Merch</span>
+          <span class="overlay-row stroke">About</span>
+          <span class="overlay-row">Connect</span>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- MENU -->
+  <!-- MAIN MENU (interactive) -->
   <section class="mega-tilt" id="menu" aria-label="Tilted menu">
     <div></div>
     <div class="slab">
@@ -166,22 +206,26 @@
     const intro = document.getElementById('introVideo');
     const enter = document.querySelector('.enter');
     const menu = document.getElementById('menu');
+
     const transWrap = document.getElementById('transition');
-    const transVid = document.getElementById('transitionVid');
+    const transVid  = document.getElementById('transitionVid');
+    const overlayStack = document.getElementById('overlayStack');
+    const overlayRows = Array.from(document.querySelectorAll('.overlay-row'));
+
     const rows = Array.from(document.querySelectorAll('.row'));
     const slab = document.querySelector('.slab');
 
-    // Force autoplay (iOS quirks)
+    /* Ensure intro actually autoplays on mobile */
     intro.muted = true;
     intro.setAttribute('muted','');
     intro.setAttribute('playsinline','');
     intro.playsInline = true;
-    const start = ()=> intro.play().catch(err => console.warn('Autoplay blocked:', err));
-    if (intro.readyState >= 2) start();
-    else intro.addEventListener('canplay', start, { once:true });
-    setTimeout(start, 1200);
+    const startIntro = ()=> intro.play().catch(()=>{});
+    if (intro.readyState >= 2) startIntro();
+    else intro.addEventListener('canplay', startIntro, { once:true });
+    setTimeout(startIntro, 1200);
 
-    // Fade in Enter after intro ends (or fallback timer)
+    /* Fade in Enter after intro ends (or fallback) */
     function showEnter(){
       enter.style.transition = 'opacity 0.8s ease';
       enter.style.opacity = 1;
@@ -190,25 +234,37 @@
     enter.style.opacity = 0;
     enter.style.pointerEvents = 'none';
     intro.addEventListener('ended', showEnter, { once:true });
-    setTimeout(showEnter, 10000); // fallback if video stalls
+    setTimeout(showEnter, 10000);
 
-    // Enter click → play transition → scroll to menu
+    /* Enter click → play transition with overlay menu → then scroll to real menu */
     function playTransitionThenScroll(e){
       e.preventDefault();
+
+      // show overlay
       transWrap.style.display = 'block';
       transVid.currentTime = 0;
+
+      // reveal overlay rows in a stagger while video plays
+      overlayRows.forEach((el, i) => {
+        el.classList.remove('in');
+        setTimeout(()=> el.classList.add('in'), i * 140);
+      });
+
       transVid.play().catch(()=>{});
+
       const finish = ()=>{
         transVid.removeEventListener('ended', finish);
         transWrap.style.display = 'none';
-        menu.scrollIntoView({ behavior:'smooth' });
+        menu.scrollIntoView({behavior:'smooth'});
       };
       transVid.addEventListener('ended', finish, { once:true });
-      setTimeout(()=>{ if(!transVid.paused) return; finish(); }, 2500);
+
+      // hard fallback in case the video can't play
+      setTimeout(()=>{ if (!transVid.paused) return; finish(); }, 2500);
     }
     document.querySelector('.enter').addEventListener('click', playTransitionThenScroll);
 
-    // Menu reveal + tilt
+    /* Main menu: reveal + tilt on scroll */
     const io = new IntersectionObserver((entries)=>{
       entries.forEach(entry=>{
         if(entry.isIntersecting){
