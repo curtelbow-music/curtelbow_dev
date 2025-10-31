@@ -34,8 +34,7 @@
       display:grid;place-items:center;overflow:hidden;
     }
     .hero__bg{
-      display:block;
-      position:absolute;inset:0;
+      display:block;position:absolute;inset:0;
       width:100%;height:100%;object-fit:cover;
       z-index:1;opacity:.9;
     }
@@ -47,11 +46,10 @@
     .hero__content{
       position:relative;z-index:3;text-align:center;padding:24px;
     }
-    .hero h1{
+    h1{
       margin:0 0 10px;font-family:'Permanent Marker',cursive;letter-spacing:1px;
       font-size:clamp(32px,6vw,72px);text-shadow:0 10px 30px rgba(0,0,0,.6)
     }
-    .hero p{margin:0 0 20px;opacity:.9}
     .enter{
       display:inline-flex;align-items:center;gap:8px;
       background:var(--accent);color:#000;border:2px solid var(--accent);
@@ -123,7 +121,7 @@
     <video
       class="hero__bg"
       id="introVideo"
-      src="./media/green_intro.mp4?v=2"
+      src="./media/green_intro.mp4"
       autoplay
       muted
       playsinline
@@ -133,7 +131,6 @@
 
     <div class="hero__content">
       <h1>CURT ELBOW</h1>
-      <p>Trap Worship · Faith over Fear</p>
       <a class="enter" href="#menu"><span>Enter</span> ↓</a>
     </div>
   </header>
@@ -157,6 +154,7 @@
     </div>
   </section>
 
+  <!-- Placeholder sections -->
   <section id="listen"  style="height:100vh"></section>
   <section id="video"   style="height:100vh"></section>
   <section id="merch"   style="height:100vh"></section>
@@ -173,15 +171,15 @@
     const rows = Array.from(document.querySelectorAll('.row'));
     const slab = document.querySelector('.slab');
 
-    // Force autoplay and fix iOS quirks
+    // Force autoplay (iOS quirks)
     intro.muted = true;
     intro.setAttribute('muted','');
     intro.setAttribute('playsinline','');
     intro.playsInline = true;
     const start = ()=> intro.play().catch(err => console.warn('Autoplay blocked:', err));
-    if(intro.readyState>=2) start();
-    else intro.addEventListener('canplay', start, {once:true});
-    setTimeout(start,1200);
+    if (intro.readyState >= 2) start();
+    else intro.addEventListener('canplay', start, { once:true });
+    setTimeout(start, 1200);
 
     // Fade in Enter after intro ends (or fallback timer)
     function showEnter(){
@@ -189,10 +187,12 @@
       enter.style.opacity = 1;
       enter.style.pointerEvents = 'auto';
     }
-    intro.addEventListener('ended', showEnter, {once:true});
-    setTimeout(showEnter, 10000); // fallback
+    enter.style.opacity = 0;
+    enter.style.pointerEvents = 'none';
+    intro.addEventListener('ended', showEnter, { once:true });
+    setTimeout(showEnter, 10000); // fallback if video stalls
 
-    // Enter click → play transition video → scroll
+    // Enter click → play transition → scroll to menu
     function playTransitionThenScroll(e){
       e.preventDefault();
       transWrap.style.display = 'block';
@@ -201,36 +201,35 @@
       const finish = ()=>{
         transVid.removeEventListener('ended', finish);
         transWrap.style.display = 'none';
-        menu.scrollIntoView({behavior:'smooth'});
+        menu.scrollIntoView({ behavior:'smooth' });
       };
-      transVid.addEventListener('ended', finish, {once:true});
-      setTimeout(()=>{if(!transVid.paused)return;finish();},2500);
+      transVid.addEventListener('ended', finish, { once:true });
+      setTimeout(()=>{ if(!transVid.paused) return; finish(); }, 2500);
     }
-    enter.addEventListener('click', playTransitionThenScroll);
+    document.querySelector('.enter').addEventListener('click', playTransitionThenScroll);
 
-    // Menu animation
+    // Menu reveal + tilt
     const io = new IntersectionObserver((entries)=>{
       entries.forEach(entry=>{
         if(entry.isIntersecting){
-          rows.forEach((r,i)=>setTimeout(()=>r.classList.add('in'),i*120));
+          rows.forEach((r,i)=> setTimeout(()=> r.classList.add('in'), i*120));
           io.unobserve(entry.target);
         }
       });
-    },{threshold:0.2});
+    },{ threshold:0.2 });
     io.observe(document.getElementById('menuStack'));
 
-    // Tilt motion
     function updateTilt(){
       const y=window.scrollY||document.documentElement.scrollTop;
       const h=document.documentElement.scrollHeight-window.innerHeight;
       const t=h>0?(y/h):0;
-      const baseRotY=-26,baseSkew=-6;
+      const baseRotY=-26, baseSkew=-6;
       const ry=baseRotY+(t*6);
       const skew=baseSkew+(t*2);
       slab.style.transform=`rotateY(${ry}deg) skewX(${skew}deg) translateX(2vw)`;
     }
-    window.addEventListener('scroll',()=>requestAnimationFrame(updateTilt),{passive:true});
-    window.addEventListener('resize',()=>requestAnimationFrame(updateTilt),{passive:true});
+    window.addEventListener('scroll', ()=> requestAnimationFrame(updateTilt), {passive:true});
+    window.addEventListener('resize', ()=> requestAnimationFrame(updateTilt), {passive:true});
   })();
   </script>
 </body>
