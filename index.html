@@ -5,23 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Curt Elbow — Dev</title>
 
-  <!-- Prevent search indexing -->
+  <!-- Keep dev out of search engines -->
   <meta name="robots" content="noindex, nofollow">
 
-  <!-- Local Three.js (keeps 3D working even if CDN is blocked) -->
+  <!-- Brand font for title -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Permanent+Marker&display=swap" rel="stylesheet">
+
+  <!-- Local Three.js so 3D works without external CDNs -->
   <script src="./scripts/three.min.js"></script>
 
   <style>
-    body {
+    :root{
+      --bg:#0b0b0b;
+      --fg:#f5f5f5;
+      --accent:#32cd32; /* green */
+    }
+    /* Page fade-in */
+    html.is-loading { opacity: 0; }
+    html.is-ready   { opacity: 1; transition: opacity .45s ease; }
+
+    /* Base */
+    *{ box-sizing: border-box }
+    html, body { height: 100% }
+    body{
       margin: 0;
-      background: #0b0b0b;
-      color: #f5f5f5;
+      background: var(--bg);
+      color: var(--fg);
       font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
       overflow-x: hidden;
     }
 
-    /* Staging badge */
-    .env-badge {
+    /* STAGING badge (shown only on dev via script) */
+    .env-badge{
       position: fixed;
       z-index: 9999;
       top: 10px;
@@ -31,84 +48,103 @@
       background: #111;
       color: #9ff39f;
       font: 12px/1.2 Inter, system-ui;
+      box-shadow: 0 2px 10px rgba(0,0,0,.35);
     }
 
-    /* Hero video background */
-    video {
+    /* Fullscreen hero video background */
+    .hero-bg{
       position: fixed;
       inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
       z-index: -1;
+      opacity: .9;
     }
 
-    /* Hero section */
-    .hero {
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
+    /* Centered hero content (overlay above video & 3D) */
+    .hero{
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
       text-align: center;
+      padding: 24px;
     }
-
-    .hero h1 {
-      font-family: 'Permanent Marker', cursive;
-      color: #f5f5f5;
-      margin-bottom: 8px;
+    .hero h1{
+      margin: 0 0 8px;
+      font-family: "Permanent Marker", cursive;
       font-size: clamp(32px, 6vw, 72px);
+      letter-spacing: 1px;
+      text-shadow: 0 10px 30px rgba(0,0,0,.55);
     }
-
-    .hero p {
-      color: #9ff39f;
+    .hero p{
       margin: 0;
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: .3px;
     }
   </style>
 </head>
 
 <body>
-  <!-- Hidden by default; shown by dev gate -->
-  <div id="envBadge" class="env-badge" style="display:none">STAGING (dev)</div>
-
+  <!-- Fade in when everything is ready -->
   <script>
-  (function () {
-    // Only gate dev subdomain
-    var isDev = /^dev\./i.test(location.hostname);
-    if (!isDev) return;
-
-    // Show STAGING badge
-    var badge = document.getElementById('envBadge');
-    if (badge) badge.style.display = 'inline-block';
-
-    // Session-scoped password gate
-    var KEY = 'ce_dev_access_v1';
-    if (sessionStorage.getItem(KEY) === '1') return;
-
-    var pass = prompt('Enter access code to view staging:');
-    var OK = (pass === 'CurtElbowDev2025'); // change to your own
-
-    if (!OK) {
-      document.documentElement.innerHTML =
-        '<!doctype html><meta charset="utf-8"><title>Access denied</title>' +
-        '<div style="display:flex;min-height:100vh;align-items:center;justify-content:center;background:#0b0b0b;color:#fff;font-family:Inter,system-ui">' +
-        '<div><h2 style="margin:0 0 8px">Access denied</h2><p>Incorrect access code.</p></div></div>';
-      throw new Error('Unauthorized');
-    }
-
-    sessionStorage.setItem(KEY, '1');
-  })();
+    document.documentElement.classList.add('is-loading');
+    window.addEventListener('load', () => {
+      requestAnimationFrame(() => {
+        document.documentElement.classList.remove('is-loading');
+        document.documentElement.classList.add('is-ready');
+      });
+    });
   </script>
 
-  <!-- Hero video background -->
-  <video src="./media/green_intro.mp4" muted playsinline autoplay loop></video>
+  <!-- Dev-only access gate + STAGING badge -->
+  <div id="envBadge" class="env-badge" style="display:none">STAGING (dev)</div>
+  <script>
+    (function () {
+      // Gate only the dev subdomain
+      var isDev = /^dev\./i.test(location.hostname);
+      if (!isDev) return;
 
-  <div class="hero">
-    <h1>CURT ELBOW (DEV)</h1>
-    <p>Trap Worship · Faith over Fear</p>
-  </div>
+      // Show STAGING badge
+      var badge = document.getElementById('envBadge');
+      if (badge) badge.style.display = 'inline-block';
 
-  <!-- Example 3D script entrypoint -->
+      // Simple session-scoped password gate
+      var KEY = 'ce_dev_access_v1';
+      if (sessionStorage.getItem(KEY) === '1') return;
+
+      var pass = prompt('Enter access code to view staging:');
+      var OK = (pass === 'CurtElbowDev2025'); // <- change this to your own secret
+
+      if (!OK) {
+        document.documentElement.innerHTML =
+          '<!doctype html><meta charset="utf-8"><title>Access denied</title>' +
+          '<div style="display:flex;min-height:100vh;align-items:center;justify-content:center;background:#0b0b0b;color:#fff;font-family:Inter,system-ui">' +
+          '<div><h2 style="margin:0 0 8px">Access denied</h2><p>Incorrect access code.</p></div></div>';
+        throw new Error('Unauthorized');
+      }
+
+      sessionStorage.setItem(KEY, '1');
+    })();
+  </script>
+
+  <!-- Fullscreen background video (replace with any file in /media) -->
+  <video class="hero-bg"
+         src="./media/green_intro.mp4"
+         muted playsinline autoplay loop></video>
+
+  <!-- 3D scene renders behind this (scripts/boombox-scene.js) -->
+
+  <!-- Foreground hero copy -->
+  <main class="hero" aria-label="Curt Elbow Dev Hero">
+    <div>
+      <h1>CURT ELBOW (DEV)</h1>
+      <p>Trap Worship · Faith over Fear</p>
+    </div>
+  </main>
+
+  <!-- Your 3D scene logic -->
   <script src="./scripts/boombox-scene.js"></script>
 </body>
 </html>
