@@ -1,1 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Do Not Sell or Share My Personal Information — T-Muzziic Group</title>
+  <style>
+    :root { --bg:#CFFFD1; --fg:#0b0b0b; --max:840px; }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif}
+    .wrap{max-width:var(--max);margin:0 auto;padding:24px 20px 56px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .brand{font-family:"Permanent Marker",system-ui,sans-serif;font-size:28px}
+    a{color:#0b0b0b;text-decoration:underline}
+    h1{margin:18px 0 6px;font-size:28px}
+    h2{margin:24px 0 8px;font-size:20px}
+    label,input,button{font:inherit}
+    input[type="text"],input[type="email"]{width:100%;max-width:520px;padding:10px;border:2px solid #000;border-radius:8px}
+    button{border:2px solid #000;background:#000;color:#CFFFD1;border-radius:999px;padding:10px 16px;font-weight:800;cursor:pointer}
+    footer{margin-top:32px;padding-top:16px;border-top:1px solid rgba(0,0,0,.2);font-size:14px}
+    .back{text-decoration:none;border:2px solid #000;border-radius:999px;padding:8px 12px;font-weight:700}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">CURT ELBOW</div>
+      <a class="back" href="/">← Back to Home</a>
+    </header>
+
+    <h1>Do Not Sell or Share My Personal Information</h1>
+    <p>
+      California residents may opt out of the “sale” or “sharing” of personal information under the CPRA.
+      We do not sell personal information for money; if any data is considered “sharing” for cross-context ads,
+      you can opt out using this form or by emailing us.
+    </p>
+
+    <h2>Opt-out request</h2>
+    <form action="mailto:terrence@t-muzziic.com" method="post" enctype="text/plain">
+      <p>
+        <label for="name"><strong>Name</strong></label><br/>
+        <input id="name" name="name" type="text" placeholder="Your name" required />
+      </p>
+      <p>
+        <label for="email"><strong>Email</strong></label><br/>
+        <input id="email" name="email" type="email" placeholder="you@example.com" required />
+      </p>
+      <p>
+        <label for="details"><strong>Notes (optional)</strong></label><br/>
+        <input id="details" name="details" type="text" placeholder="Anything else we should know" />
+      </p>
+      <p><button type="submit">Submit Opt-Out</button></p>
+    </form>
+    <p style="margin-top:10px">You can also email us at <a href="mailto:terrence@t-muzziic.com">terrence@t-muzziic.com</a>.</p>
+
+    <footer>
+      <div>© <span id="y"></span> T-Muzziic Group. All rights reserved.</div>
+      <div style="margin-top:10px">
+        <a href="/privacy/">Privacy</a> ·
+        <a href="/terms/">Terms</a> ·
+        <a href="/cookies/">Cookies</a> ·
+        <a href="/do-not-sell/">Do Not Sell/Share</a> ·
+        <a href="/accessibility/">Accessibility</a>
+      </div>
+    </footer>
+  </div>
+  <script>document.getElementById('y').textContent=new Date().getFullYear()</script>
+</body>
+</html>
 
