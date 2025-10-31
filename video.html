@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Curt Elbow — Video</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Permanent+Marker&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0b0b0b;
+      --fg:#f5f5f5;
+      --muted:#b7b7b7;
+      --accent:#32cd32;
+      --stroke:#32cd32;
+      --card:#121212;
+      --cardBorder:#1e1e1e;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--fg)}
+    body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+
+    a{color:inherit;text-decoration:none}
+    .wrap{max-width:1200px;margin:0 auto;padding:20px clamp(16px,4vw,32px) 48px}
+
+    header{
+      display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+      padding-top:8px;padding-bottom:18px;border-bottom:1px solid #1c1c1c;
+    }
+    .brand{
+      font-family:'Permanent Marker',cursive;letter-spacing:.8px;
+      font-size:clamp(28px,4vw,44px);
+      display:flex;align-items:baseline;gap:12px;
+    }
+    .brand .tag{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.2em}
+    nav a{
+      display:inline-flex;align-items:center;gap:8px;
+      background:transparent;border:2px solid var(--accent);color:var(--accent);
+      padding:10px 14px;border-radius:999px;font-weight:800;letter-spacing:.3px;
+    }
+    nav a:hover{background:var(--accent);color:#000}
+
+    .filters{
+      display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 6px;
+    }
+    .chip{
+      border:1px solid #2b2b2b;background:#121212;color:#ddd;
+      padding:6px 10px;border-radius:999px;font-size:12px;cursor:pointer;
+    }
+    .chip.active{border-color:var(--accent);color:#000;background:var(--accent)}
+
+    /* GRID */
+    .grid{
+      display:grid;gap:18px;
+      grid-template-columns:repeat(12,1fr);
+    }
+    .card{
+      grid-column:span 12;
+      background:var(--card);border:1px solid var(--cardBorder);
+      border-radius:14px;overflow:hidden;position:relative;
+      transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      cursor:pointer;
+    }
+    .card:hover{
+      transform:translateY(-2px);
+      border-color:#2a2a2a;
+      box-shadow:0 10px 28px rgba(0,0,0,.35);
+    }
+    .thumb{
+      position:relative;aspect-ratio:16/9;overflow:hidden;background:#0a0a0a;
+    }
+    .thumb img{width:100%;height:100%;object-fit:cover;display:block;opacity:.9}
+    .play{
+      position:absolute;inset:auto 0 0 0;margin:auto;top:50%;width:74px;height:74px;border-radius:50%;
+      background:rgba(0,0,0,.55);border:2px solid rgba(255,255,255,.8);
+      transform:translateY(-50%);display:grid;place-items:center;
+      backdrop-filter:blur(2px);
+    }
+    .play::before{
+      content:"";display:block;border-left:18px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent;
+      margin-left:6px;
+    }
+    .badge{
+      position:absolute;left:10px;top:10px;background:rgba(0,0,0,.65);color:#fff;
+      padding:4px 8px;font-size:11px;border-radius:8px;border:1px solid rgba(255,255,255,.15);
+    }
+    .meta{
+      padding:12px 14px 16px;display:flex;flex-direction:column;gap:6px
+    }
+    .title{font-weight:900;letter-spacing:.2px;font-size:16px}
+    .desc{color:var(--muted);font-size:13px;line-height:1.45}
+
+    @media(min-width:640px){
+      .card{grid-column:span 6}
+    }
+    @media(min-width:1000px){
+      .card{grid-column:span 4}
+    }
+
+    /* MODAL */
+    .modal{
+      position:fixed;inset:0;background:rgba(0,0,0,.84);z-index:70;display:none;
+      align-items:center;justify-content:center;padding:24px;
+      backdrop-filter:saturate(120%) blur(2px);
+    }
+    .modal.show{display:flex;animation:fadeIn .2s ease}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+    .modal-inner{
+      width:min(1100px,96vw);max-height:88vh;background:#0b0b0b;border-radius:14px;
+      overflow:hidden;border:1px solid #222;box-shadow:0 20px 60px rgba(0,0,0,.6);
+    }
+    .modal-video{position:relative;aspect-ratio:16/9;background:#000}
+    .modal-video iframe,
+    .modal-video video{position:absolute;inset:0;width:100%;height:100%}
+
+    .modal-bar{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:10px 14px;border-top:1px solid #191919;background:#0f0f0f;
+    }
+    .modal-title{font-weight:800}
+    .modal-actions{display:flex;gap:10px}
+    .btn{
+      border:1px solid #2b2b2b;background:#151515;color:#ddd;padding:8px 12px;border-radius:10px;font-size:13px
+    }
+    .btn.accent{border-color:var(--accent);background:var(--accent);color:#000;font-weight:800}
+
+    /* Small helper */
+    .sr{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <span>CURT ELBOW</span>
+        <span class="tag">VIDEO</span>
+      </div>
+      <nav>
+        <a href="./index.html">← Home</a>
+      </nav>
+    </header>
+
+    <!-- Filters (optional) -->
+    <div class="filters" id="filters">
+      <button class="chip active" data-filter="all">All</button>
+      <button class="chip" data-filter="music">Music Videos</button>
+      <button class="chip" data-filter="short">Shorts</button>
+      <button class="chip" data-filter="live">Live</button>
+    </div>
+
+    <!-- Video Grid -->
+    <section class="grid" id="videoGrid" aria-label="Video gallery">
+      <!-- Example: YouTube (privacy mode) -->
+      <article class="card" data-id="where-would-i-be" data-type="youtube" data-src="7grTnPGA3LOF0acWwOvFWT" data-tags="music">
+        <div class="thumb">
+          <img loading="lazy" src="./media/thumbs/where_would_i_be.jpg" alt="Where Would I Be — thumbnail">
+          <div class="badge">YouTube</div>
+          <div class="play" aria-hidden="true"></div>
+        </div>
+        <div class="meta">
+          <div class="title">Where Would I Be</div>
+          <p class="desc">Official visual — AI film direction by Nayloroad Creatives.</p>
+        </div>
+      </article>
+
+      <!-- Example: Local MP4 -->
+      <article class="card" data-id="green-intro" data-type="mp4" data-src="./media/green_intro.mp4" data-tags="short">
+        <div class="thumb">
+          <img loading="lazy" src="./media/thumbs/green_intro.jpg" alt="Green Intro — thumbnail">
+          <div class="badge">MP4</div>
+          <div class="play" aria-hidden="true"></div>
+        </div>
+        <div class="meta">
+          <div class="title">Green Intro</div>
+          <p class="desc">Motion intro concept used on the Enter page.</p>
+        </div>
+      </article>
+
+      <!-- Example: Vimeo -->
+      <article class="card" data-id="sample-vimeo" data-type="vimeo" data-src="76979871" data-tags="live">
+        <div class="thumb">
+          <img loading="lazy" src="./media/thumbs/vimeo_sample.jpg" alt="Vimeo sample — thumbnail">
+          <div class="badge">Vimeo</div>
+          <div class="play" aria-hidden="true"></div>
+        </div>
+        <div class="meta">
+          <div class="title">Vimeo Sample</div>
+          <p class="desc">Placeholder example of a Vimeo embed.</p>
+        </div>
+      </article>
+    </section>
+  </div>
+
+  <!-- Modal Player -->
+  <div class="modal" id="videoModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-inner">
+      <div class="modal-video" id="modalVideoArea">
+        <!-- iframe or <video> injected here -->
+      </div>
+      <div class="modal-bar">
+        <div class="modal-title" id="modalTitle">Playing…</div>
+        <div class="modal-actions">
+          <button class="btn" id="closeBtn">Close (Esc)</button>
+          <a class="btn accent" id="openBtn" href="#" target="_blank" rel="noopener">Open in platform</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <span class="sr" id="srStatus" aria-live="polite"></span>
+
+  <script>
+  (function(){
+    const grid = document.getElementById('videoGrid');
+    const modal = document.getElementById('videoModal');
+    const modalVideo = document.getElementById('modalVideoArea');
+    const modalTitleEl = document.getElementById('modalTitle');
+    const openBtn = document.getElementById('openBtn');
+    const closeBtn = document.getElementById('closeBtn');
+    const sr = document.getElementById('srStatus');
+
+    const chips = Array.from(document.querySelectorAll('.chip'));
+
+    // --- Helpers
+    function $$ (sel, root=document){ return Array.from(root.querySelectorAll(sel)); }
+    function escapeHtml(s){ return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+    function openModalFromCard(card){
+      const type = card.dataset.type;
+      const src  = card.dataset.src;
+      const title = card.querySelector('.title')?.textContent?.trim() || 'Playing…';
+      modalTitleEl.textContent = title;
+
+      // Build player
+      let node = null;
+      let openHref = '#';
+
+      if(type === 'youtube'){
+        // https://www.youtube-nocookie.com/embed/{id}
+        const id = src;
+        openHref = `https://www.youtube.com/watch?v=${encodeURIComponent(id)}`;
+        node = document.createElement('iframe');
+        node.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&modestbranding=1`;
+        node.title = title;
+        node.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen; web-share';
+        node.allowFullscreen = true;
+        node.frameBorder = '0';
+      } else if (type === 'vimeo'){
+        const id = src;
+        openHref = `https://vimeo.com/${encodeURIComponent(id)}`;
+        node = document.createElement('iframe');
+        node.src = `https://player.vimeo.com/video/${encodeURIComponent(id)}?autoplay=1&title=0&byline=0&portrait=0`;
+        node.title = title;
+        node.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+        node.allowFullscreen = true;
+        node.frameBorder = '0';
+      } else if (type === 'mp4'){
+        openHref = src;
+        node = document.createElement('video');
+        node.src = src;
+        node.controls = true;
+        node.autoplay = true;
+        node.playsInline = true;
+        node.preload = 'metadata';
+      } else {
+        alert('Unsupported video type.');
+        return;
+      }
+
+      // Inject
+      modalVideo.innerHTML = '';
+      modalVideo.appendChild(node);
+      openBtn.href = openHref;
+
+      // Show
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+      sr.textContent = `Opened ${title}`;
+    }
+
+    function closeModal(){
+      modal.classList.remove('show');
+      document.body.style.overflow = '';
+      modalVideo.innerHTML = '';
+      sr.textContent = 'Closed player';
+      history.replaceState(null, '', window.location.pathname); // clear #id
+    }
+
+    // Grid click
+    grid.addEventListener('click', (e)=>{
+      const card = e.target.closest('.card');
+      if(!card) return;
+      openModalFromCard(card);
+      const id = card.dataset.id;
+      if(id) history.replaceState(null, '', `#id=${encodeURIComponent(id)}`);
+    });
+
+    // Modal close controls
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape') closeModal();
+    });
+
+    // Filters
+    chips.forEach(ch=>{
+      ch.addEventListener('click', ()=>{
+        chips.forEach(c=>c.classList.remove('active'));
+        ch.classList.add('active');
+        const f = ch.dataset.filter;
+        $$('article.card', grid).forEach(card=>{
+          const tags = (card.dataset.tags||'').split(',').map(s=>s.trim());
+          const show = (f==='all') || tags.includes(f);
+          card.style.display = show ? '' : 'none';
+        });
+      });
+    });
+
+    // Deep link: video.html#id=where-would-i-be
+    const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
+    const deepId = hash.get('id');
+    if(deepId){
+      const found = $$('article.card').find(c => c.dataset.id === deepId);
+      if(found) openModalFromCard(found);
+    }
+  })();
+  </script>
+</body>
+</html>
