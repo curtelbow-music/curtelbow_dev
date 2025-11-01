@@ -4,122 +4,160 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex, nofollow" />
-  <title>Curt Elbow (Dev)</title>
+  <title>Curt Elbow — Front Page (dev)</title>
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Permanent+Marker&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --bg:#0b0b0b;
-      --fg:#f5f5f5;
-      --accent:#32cd32;
-      --stroke:#32cd32;
+      --bg:#0b0b0b; --fg:#f5f5f5; --accent:#32cd32;
+      --overlayStart: rgba(0,0,0,.15);
+      --overlayEnd:   rgba(0,0,0,.65);
     }
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:#000;color:var(--fg);overflow-x:hidden}
-    body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-    .badge{position:fixed;top:10px;right:10px;z-index:40;background:#0f0;color:#000;font-weight:700;font-size:12px;padding:4px 8px;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.35)}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--fg)}
+    body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; overflow-x:hidden}
+    a{color:inherit;text-decoration:none}
 
-    /* HERO */
-    .hero{position:relative;height:100svh;display:grid;place-items:center;overflow:hidden;}
-    .hero__bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;opacity:.9;}
-    .hero::after{content:"";position:absolute;inset:0;background:radial-gradient(1200px 600px at 50% 60%,rgba(0,0,0,.15),rgba(0,0,0,.55) 70%);z-index:2;}
-    .hero__content{position:relative;z-index:3;text-align:center;padding:24px;}
-    h1{margin:0 0 10px;font-family:'Permanent Marker',cursive;letter-spacing:1px;font-size:clamp(32px,6vw,72px);text-shadow:0 10px 30px rgba(0,0,0,.6);}
-    .enter{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#000;border:2px solid var(--accent);border-radius:999px;padding:12px 18px;font-weight:800;letter-spacing:.4px;text-decoration:none;transition:transform .12s ease,opacity .6s ease;opacity:0;pointer-events:none;}
-    .enter:hover{transform:translateY(-1px)}
+    /* ===== HERO ===== */
+    .hero{position:relative;height:100svh;display:grid;place-items:center;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.08)}
+    .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.9;filter:contrast(1.06) saturate(1.05)}
+    .hero::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,var(--overlayStart),var(--overlayEnd) 70%)}
+    .hero__content{position:relative;z-index:2;text-align:center;padding:24px}
+    .brand{font-family:'Permanent Marker',cursive;letter-spacing:1px;margin:0 0 8px;font-size:clamp(28px,6vw,64px);text-shadow:0 12px 36px rgba(0,0,0,.55)}
+    .enter{display:inline-flex;align-items:center;gap:10px;color:#000;background:var(--accent);border:2px solid var(--accent);border-radius:999px;padding:12px 18px;font-weight:900;letter-spacing:.4px;box-shadow:0 8px 26px rgba(50,205,50,.25);opacity:0;transform:translateY(6px);transition:opacity .3s ease,transform .3s ease}
+    .enter.show{opacity:1;transform:none}
+    .enter:hover{filter:brightness(1.05)}
 
-    /* TRANSITION */
-    .transition-layer{position:fixed;inset:0;z-index:50;display:none;background:#000;opacity:1;transition:opacity .5s ease;}
-    .transition-layer.show{display:block;}
-    .transition-layer.fade-out{opacity:0;}
-    .transition-layer::after{content:"";position:absolute;inset:0;z-index:1;background:rgba(0,0,0,.0);transition:background .45s ease;}
-    .transition-layer.dim::after{background:rgba(0,0,0,.42);}
-    .transition-layer video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+    /* ===== TRANSITION / MENU ===== */
+    #menu{position:relative;min-height:100svh}
+    .stage{position:relative;height:100svh;overflow:hidden}
+    .stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:contrast(1.04) saturate(1.05)}
+    .stage .darken{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.65));pointer-events:none;opacity:.0;transition:opacity .5s ease}
+    .stage.darker .darken{opacity:1}
 
-    .transition-overlay{position:absolute;inset:0;z-index:2;display:grid;grid-template-columns:clamp(460px,42vw,860px) 1fr;align-items:center;padding:clamp(20px,4vw,40px);pointer-events:none;}
-    .transition-overlay.interactive{pointer-events:auto;}
-    .overlay-slab{justify-self:start;transform:perspective(1600px) rotateY(14deg) skewX(2deg) translateX(1vw);}
-    .overlay-stack{display:flex;flex-direction:column;gap:clamp(6px,1.2vw,16px);line-height:.86;}
-    .overlay-link{display:block;text-decoration:none;color:var(--fg);font-family:'Permanent Marker',cursive;font-weight:400;font-size:clamp(36px,12vw,180px);letter-spacing:.5px;text-transform:uppercase;margin:0;opacity:0;transform:translateY(18px) scale(.98);transition:opacity .8s ease,transform .8s ease,color .2s ease;cursor:default;}
-    .overlay-link.stroke{color:transparent;-webkit-text-stroke:clamp(2px,.45vw,7px) var(--stroke);text-stroke:clamp(2px,.45vw,7px) var(--stroke);}
-    .overlay-link.in{opacity:1;transform:translateY(0) scale(1);}
-    .transition-overlay.interactive .overlay-link{cursor:pointer;}
-    .transition-overlay.interactive .overlay-link:hover{color:var(--accent);}
+    .menu{position:relative;z-index:2;height:100%;display:grid;align-items:center;padding:clamp(16px,4vw,40px)}
+    .menu-inner{display:flex;gap:clamp(24px,5vw,48px);align-items:flex-start}
+    .menu-left{flex:0 0 32ch; max-width:40vw}
+    .menu-list{display:flex;flex-direction:column;gap:clamp(6px,1.4vw,16px)}
+    .menu-link{--stroke: var(--accent); color:var(--fg); font-family:'Permanent Marker',cursive; text-transform:uppercase;letter-spacing:.5px; font-size:clamp(44px,9.5vw,116px); line-height:.9; transition:transform .15s ease,color .15s ease, text-shadow .15s ease; text-shadow:0 0 0 rgba(0,0,0,0)}
+    .menu-link.stroke{color:transparent;-webkit-text-stroke:clamp(2px,.6vw,8px) var(--stroke); text-stroke:clamp(2px,.6vw,8px) var(--stroke)}
+    .menu-link:hover{color:var(--accent); transform:translateX(6px); text-shadow:0 0 16px rgba(50,205,50,.35)}
+    .spacer{flex:1}
+    @media (max-width:760px){ .menu-inner{gap:18px} .menu-left{flex:1} .menu-link{font-size:clamp(38px,12vw,82px)} }
+
+    /* ===== New Site Footer (shared) ===== */
+    .site-footer {
+      background: #000;
+      text-align: center;
+      padding: 40px 16px 28px;
+      color: #8fe88f;
+      font-family: Inter, system-ui, sans-serif;
+    }
+    .site-footer .socials { display:flex; justify-content:center; gap:28px; margin-bottom:14px }
+    .site-footer .socials a{ line-height:0 }
+    .site-footer .socials img{ width:34px; height:34px; color:#32cd32; filter:drop-shadow(0 0 6px #00ff66); transition:transform .2s ease, filter .2s ease }
+    .site-footer .socials img:hover{ transform:scale(1.1); filter:drop-shadow(0 0 12px #00ff66) }
+    .site-footer .legal-row{ display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:10px 18px; font-size:14px }
+    .site-footer .legal-row .links{ display:flex; flex-wrap:wrap; gap:8px; align-items:center }
+    .site-footer .legal-row .links a{ color:#aaffaa; text-decoration:none; font-weight:600 }
+    .site-footer .legal-row .links a:hover{ text-decoration:underline }
+    .site-footer .legal-row .copy{ color:#aaffaa; font-weight:600 }
+    @media (min-width: 860px){ .site-footer .legal-row{ justify-content:space-between; max-width:960px; margin:0 auto } }
   </style>
 </head>
-
 <body>
-  <div class="badge">STAGING (dev)</div>
 
   <!-- HERO -->
-  <header class="hero">
-    <video class="hero__bg" id="introVideo" src="./media/green_intro.mp4" autoplay muted playsinline preload="auto"></video>
+  <header class="hero" id="top">
+    <video id="introVideo" src="./media/green_intro.mp4" muted playsinline autoplay preload="auto"></video>
     <div class="hero__content">
-      <h1>CURT ELBOW</h1>
-      <a class="enter" href="#menu"><span>Enter</span> ↓</a>
+      <h1 class="brand">CURT ELBOW</h1>
+      <a id="enterBtn" class="enter" href="#menu">Enter ↓</a>
     </div>
   </header>
 
-  <!-- TRANSITION LAYER -->
-  <div class="transition-layer" id="transition">
-    <video id="transitionVid" src="./media/transition_video.mp4" muted playsinline preload="auto"></video>
-    <div class="transition-overlay" id="transitionOverlay" aria-hidden="true">
-      <div></div>
-      <div class="overlay-slab">
-        <div class="overlay-stack" id="overlayStack">
-          <a class="overlay-link stroke" href="#music">Music</a>
-          <a class="overlay-link" href="./video/">Video</a> <!-- ✅ now links to your new video page -->
-          <a class="overlay-link" href="#merch">Merch</a>
-          <a class="overlay-link stroke" href="#about">About</a>
-          <a class="overlay-link" href="#connect">Connect</a>
+  <!-- TRANSITION / MENU -->
+  <section id="menu">
+    <div class="stage" id="stage">
+      <video id="transVideo" src="./media/transition_video.mp4" playsinline preload="auto"></video>
+      <div class="darken"></div>
+      <div class="menu">
+        <div class="menu-inner">
+          <div class="menu-left">
+            <nav class="menu-list">
+              <a class="menu-link stroke" href="#music">Music</a>
+              <a class="menu-link"        href="./video/">Video</a>
+              <a class="menu-link"        href="#merch">Merch</a>
+              <a class="menu-link stroke" href="#about">About</a>
+              <a class="menu-link"        href="#connect">Connect</a>
+            </nav>
+          </div>
+          <div class="spacer"></div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
+
+  <!-- NEW FOOTER -->
+  <footer class="site-footer">
+    <div class="socials">
+      <a href="https://youtube.com/@curtelbow" target="_blank" rel="noopener" aria-label="YouTube">
+        <img src="/media/icons/youtube.svg" alt="YouTube">
+      </a>
+      <a href="https://tiktok.com/@curtelbow" target="_blank" rel="noopener" aria-label="TikTok">
+        <img src="/media/icons/tiktok.svg" alt="TikTok">
+      </a>
+      <a href="https://instagram.com/curtelbow" target="_blank" rel="noopener" aria-label="Instagram">
+        <img src="/media/icons/instagram.svg" alt="Instagram">
+      </a>
+    </div>
+    <div class="legal-row">
+      <nav class="links">
+        <a href="/privacy/">Privacy</a><span>|</span>
+        <a href="/terms/">Terms</a><span>|</span>
+        <a href="/cookies/">Cookies</a><span>|</span>
+        <a href="/do-not-sell/">Do Not Sell/Share</a><span>|</span>
+        <a href="/accessibility/">Accessibility</a>
+      </nav>
+      <div class="copy">© <span id="y"></span> Curt Elbow</div>
+    </div>
+  </footer>
 
   <script>
-  (function(){
-    const intro=document.getElementById('introVideo');
-    const enter=document.querySelector('.enter');
-    const transWrap=document.getElementById('transition');
-    const transVid=document.getElementById('transitionVid');
-    const overlay=document.getElementById('transitionOverlay');
-    const overlayLinks=Array.from(document.querySelectorAll('.overlay-link'));
+    (function(){
+      const enterBtn = document.getElementById('enterBtn');
+      const intro    = document.getElementById('introVideo');
+      const trans    = document.getElementById('transVideo');
+      const stage    = document.getElementById('stage');
 
-    // autoplay
-    intro.muted=true;intro.playsInline=true;intro.play().catch(()=>{});
-    const showEnter=()=>{enter.style.opacity=1;enter.style.pointerEvents='auto';};
-    intro.addEventListener('ended',showEnter,{once:true});
-    setTimeout(showEnter,10000);
+      window.addEventListener('load', () => { setTimeout(()=> enterBtn.classList.add('show'), 900); });
 
-    // enter click
-    enter.addEventListener('click',e=>{
-      e.preventDefault();
-      transWrap.classList.add('show');
-      transVid.currentTime=0;
-      overlayLinks.forEach((el,i)=>{el.classList.remove('in');setTimeout(()=>el.classList.add('in'),i*110);});
-      transVid.play().catch(()=>{});
-      transVid.addEventListener('ended',()=>{
-        transWrap.classList.add('dim');
-        overlay.classList.add('interactive');
-        transVid.pause();
-      },{once:true});
-    });
-
-    // fadeout on internal link click
-    overlayLinks.forEach(link=>{
-      link.addEventListener('click',e=>{
-        const href=link.getAttribute('href');
-        if(href.startsWith('#')){e.preventDefault();}
-        transWrap.classList.add('fade-out');
-        setTimeout(()=>{transWrap.classList.remove('show','fade-out','dim');overlay.classList.remove('interactive');},450);
+      intro.addEventListener('ended', () => {
+        try{ intro.currentTime = Math.max(0, intro.duration - 0.05); intro.pause(); }catch(e){}
       });
-    });
-  })();
+
+      enterBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('menu').scrollIntoView({behavior:'smooth'});
+        const play = () => trans.play().catch(()=>{});
+        if ('IntersectionObserver' in window){
+          const io = new IntersectionObserver((ents)=>{
+            ents.forEach(ent=>{ if (ent.isIntersecting){ play(); io.disconnect(); } });
+          },{threshold:.35});
+          io.observe(stage);
+        } else { play(); }
+      });
+
+      trans.addEventListener('ended', () => {
+        try{ trans.currentTime = Math.max(0, trans.duration - 0.05); trans.pause(); }catch(e){}
+        stage.classList.add('darker');
+      });
+    })();
+
+    document.getElementById('y').textContent = new Date().getFullYear();
   </script>
 </body>
 </html>
