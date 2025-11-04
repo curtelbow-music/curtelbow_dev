@@ -1,146 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Keep dev out of search -->
-  <meta name="robots" content="noindex, nofollow" />
-  <title>Curt Elbow — Front Page (dev)</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Curt Elbow — Dev</title>
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Permanent+Marker&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Permanent+Marker&display=swap" rel="stylesheet">
 
-  <style>
-    :root{
-      --bg:#0b0b0b; --fg:#f5f5f5; --accent:#32cd32;
-      --overlayStart: rgba(0,0,0,.15);
-      --overlayEnd:   rgba(0,0,0,.65);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:var(--bg);color:var(--fg)}
-    body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; overflow-x:hidden}
+<style>
+  :root{
+    --bg:#0b0b0b; --fg:#f5f5f5; --accent:#32cd32;
+    --taglineSize: clamp(12px,2.2vw,16px);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--fg)}
+  body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
 
-    a{color:inherit;text-decoration:none}
+  /* ===== HERO ===== */
+  .hero{position:relative;height:100svh;display:grid;place-items:center;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.08)}
+  .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.9;filter:contrast(1.06) saturate(1.05)}
+  .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.65) 70%);pointer-events:none}
+  .hero__content{position:relative;z-index:2;text-align:center;padding:24px}
+  .brand{font-family:'Permanent Marker',cursive;letter-spacing:1px;margin:0 0 6px;font-size:clamp(28px,6vw,64px);text-shadow:0 12px 36px rgba(0,0,0,.55)}
+  #tagline{margin:0 0 18px;opacity:.0;transform:translateY(6px);font-size:var(--taglineSize);color:#cfeecf}
+  .enter{display:inline-flex;align-items:center;gap:10px;color:#000;background:var(--accent);border:2px solid var(--accent);border-radius:999px;padding:12px 18px;font-weight:900;letter-spacing:.4px;box-shadow:0 8px 26px rgba(50,205,50,.25);opacity:0;transform:translateY(6px);transition:opacity .3s ease,transform .3s ease}
+  .enter.show{opacity:1;transform:none}
+  .enter:hover{filter:brightness(1.05)}
+  .fade-in{animation:fadeUp .45s ease forwards}
+  .delay-1{animation-delay:.6s}
+  .delay-2{animation-delay:1.1s}
+  @keyframes fadeUp{to{opacity:1;transform:none}}
 
-    /* ===== HERO ===== */
-    .hero{
-      position:relative;height:100svh;display:grid;place-items:center;overflow:hidden;
-      border-bottom:1px solid rgba(255,255,255,.08);
-    }
-    .hero video{
-      position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.9;
-      filter:contrast(1.06) saturate(1.05);
-    }
-    .hero::after{
-      content:"";position:absolute;inset:0;pointer-events:none;
-      background:linear-gradient(180deg,var(--overlayStart),var(--overlayEnd) 70%);
-    }
-    .hero__content{position:relative;z-index:2;text-align:center;padding:24px}
-    .brand{
-      font-family:'Permanent Marker',cursive;letter-spacing:1px;margin:0 0 8px;
-      font-size:clamp(28px,6vw,64px);text-shadow:0 12px 36px rgba(0,0,0,.55);
-    }
-    .enter{
-      display:inline-flex;align-items:center;gap:10px;
-      color:#000;background:var(--accent);border:2px solid var(--accent);
-      border-radius:999px;padding:12px 18px;font-weight:900;letter-spacing:.4px;
-      box-shadow:0 8px 26px rgba(50,205,50,.25);
-      opacity:0;transform:translateY(6px);transition:opacity .3s ease,transform .3s ease;
-    }
-    .enter.show{opacity:1;transform:none}
-    .enter:hover{filter:brightness(1.05)}
+  /* ===== TRANSITION + MENU ===== */
+  #menu{position:relative;min-height:100svh}
+  .stage{position:relative;height:100svh;overflow:hidden}
+  .stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:contrast(1.04) saturate(1.05)}
+  .stage .darken{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.65));pointer-events:none;opacity:.0;transition:opacity .5s ease}
+  .stage.darker .darken{opacity:1}
 
-    /* ===== TRANSITION / MENU ===== */
-    #menu{position:relative;min-height:100svh}
-    .stage{
-      position:relative;height:100svh;overflow:hidden;
-    }
-    .stage video{
-      position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-      filter:contrast(1.04) saturate(1.05);
-    }
-    .stage .darken{
-      content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.65));
-      pointer-events:none;opacity:.0;transition:opacity .5s ease;
-    }
-    .stage.darker .darken{opacity:1}
+  .menu{position:relative;z-index:2;height:100%;display:grid;align-items:center;padding:clamp(16px,4vw,40px)}
+  .menu-inner{display:flex;gap:clamp(24px,5vw,48px);align-items:flex-start}
+  .menu-left{flex:0 0 32ch; max-width:40vw}
+  .menu-list{display:flex;flex-direction:column;gap:clamp(6px,1.4vw,16px)}
+  .menu-link{--stroke: var(--accent); color:var(--fg); font-family:'Permanent Marker',cursive; text-transform:uppercase;letter-spacing:.5px; font-size:clamp(44px,9.5vw,116px); line-height:.9; transition:transform .15s ease,color .15s ease, text-shadow .15s ease; text-shadow:0 0 0 rgba(0,0,0,0)}
+  .menu-link.stroke{color:transparent;-webkit-text-stroke:clamp(2px,.6vw,8px) var(--stroke); text-stroke:clamp(2px,.6vw,8px) var(--stroke)}
+  .menu-link:hover{color:var(--accent); transform:translateX(6px); text-shadow:0 0 16px rgba(50,205,50,.35)}
+  .spacer{flex:1}
+  @media (max-width:760px){ .menu-inner{gap:18px} .menu-left{flex:1} .menu-link{font-size:clamp(38px,12vw,82px)} }
 
-    .menu{
-      position:relative;z-index:2;height:100%;display:grid;align-items:center;
-      padding:clamp(16px,4vw,40px);
-    }
-    .menu-inner{
-      display:flex;gap:clamp(24px,5vw,48px);
-      align-items:flex-start;
-    }
-    .menu-left{
-      flex:0 0 32ch; max-width:40vw;
-    }
-    .menu-list{
-      display:flex;flex-direction:column;gap:clamp(6px,1.4vw,16px);
-    }
-    .menu-link{
-      --stroke: var(--accent);
-      color:var(--fg);
-      font-family:'Permanent Marker',cursive;
-      text-transform:uppercase;letter-spacing:.5px;
-      font-size:clamp(44px,9.5vw,116px);
-      line-height:.9;
-      transition:transform .15s ease,color .15s ease, text-shadow .15s ease;
-      text-shadow:0 0 0 rgba(0,0,0,0);
-    }
-    .menu-link.stroke{
-      color:transparent;
-      -webkit-text-stroke:clamp(2px,.6vw,8px) var(--stroke);
-              text-stroke:clamp(2px,.6vw,8px) var(--stroke);
-    }
-    .menu-link:hover{
-      color:var(--accent);
-      transform:translateX(6px);
-      text-shadow:0 0 16px rgba(50,205,50,.35);
-    }
-
-    .spacer{flex:1}
-
-    /* Footer (shared legal) */
-    footer{position:relative;z-index:2;background:transparent;color:#ccc}
-    .foot{
-      max-width:860px;margin:0 auto;padding:20px 16px 28px;text-align:center;border-top:1px solid rgba(255,255,255,.08)
-    }
-    .foot a{color:#8fe88f}
-    .foot a:hover{text-decoration:underline}
-
-    /* small screens */
-    @media (max-width:760px){
-      .menu-inner{gap:18px}
-      .menu-left{flex:1}
-      .menu-link{font-size:clamp(38px,12vw,82px)}
-    }
-  </style>
+  /* ===== FOOTER ===== */
+  .site-footer{background:#000;text-align:center;padding:40px 16px 28px;color:#8fe88f;font-family:Inter,system-ui,sans-serif}
+  .site-footer .socials{display:flex;justify-content:center;gap:28px;margin-bottom:14px}
+  .site-footer .socials a{line-height:0}
+  .site-footer .socials img{width:34px;height:34px;color:#32cd32;filter:drop-shadow(0 0 6px #00ff66);transition:transform .2s ease,filter .2s ease}
+  .site-footer .socials img:hover{transform:scale(1.1);filter:drop-shadow(0 0 12px #00ff66)}
+  .site-footer .legal-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 18px;font-size:14px}
+  .site-footer .legal-row .links{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .site-footer .legal-row .links a{color:#aaffaa;text-decoration:none;font-weight:600}
+  .site-footer .legal-row .links a:hover{text-decoration:underline}
+  .site-footer .legal-row .copy{color:#aaffaa;font-weight:600}
+  @media (min-width: 860px){ .site-footer .legal-row{justify-content:space-between;max-width:960px;margin:0 auto} }
+</style>
 </head>
 <body>
 
-  <!-- ===== HERO ===== -->
+  <!-- HERO -->
   <header class="hero" id="top">
     <video id="introVideo" src="./media/green_intro.mp4" muted playsinline autoplay preload="auto"></video>
     <div class="hero__content">
-      <h1 class="brand">CURT ELBOW</h1>
+      <h1 class="brand fade-in delay-1">CURT ELBOW</h1>
+      <!-- Tagline (edit the text here, or remove the line to hide) -->
+      <p id="tagline" class="fade-in delay-2">REP CHRIST THROUGH SOUND, STYLE &amp; CODE.</p>
       <a id="enterBtn" class="enter" href="#menu">Enter ↓</a>
     </div>
   </header>
 
-  <!-- ===== TRANSITION / MENU ===== -->
+  <!-- TRANSITION / MENU -->
   <section id="menu">
     <div class="stage" id="stage">
       <video id="transVideo" src="./media/transition_video.mp4" playsinline preload="auto"></video>
       <div class="darken"></div>
-
       <div class="menu">
         <div class="menu-inner">
           <div class="menu-left">
-            <nav class="menu-list">
+            <nav class="menu-list" aria-label="Main">
               <a class="menu-link stroke" href="#music">Music</a>
               <a class="menu-link"        href="./video/">Video</a>
               <a class="menu-link"        href="#merch">Merch</a>
@@ -154,69 +101,73 @@
     </div>
   </section>
 
-  <!-- ===== FOOTER (legal links) ===== -->
-  <footer>
-    <div class="foot">
-      <div>© <span id="y"></span> T-Muzziic Group. All rights reserved.</div>
-      <div style="margin-top:8px">
-        <a href="/privacy/">Privacy</a> ·
-        <a href="/terms/">Terms</a> ·
-        <a href="/cookies/">Cookies</a> ·
-        <a href="/do-not-sell/">Do Not Sell/Share</a> ·
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="socials">
+      <a href="https://youtube.com/@curtelbow" target="_blank" rel="noopener" aria-label="YouTube">
+        <img src="/media/icons/youtube.svg" alt="YouTube">
+      </a>
+      <a href="https://tiktok.com/@curtelbow" target="_blank" rel="noopener" aria-label="TikTok">
+        <img src="/media/icons/tiktok.svg" alt="TikTok">
+      </a>
+      <a href="https://instagram.com/curtelbow" target="_blank" rel="noopener" aria-label="Instagram">
+        <img src="/media/icons/instagram.svg" alt="Instagram">
+      </a>
+    </div>
+    <div class="legal-row">
+      <nav class="links">
+        <a href="/privacy/">Privacy</a><span>|</span>
+        <a href="/terms/">Terms</a><span>|</span>
+        <a href="/cookies/">Cookies</a><span>|</span>
+        <a href="/do-not-sell/">Do Not Sell/Share</a><span>|</span>
         <a href="/accessibility/">Accessibility</a>
-      </div>
+      </nav>
+      <div class="copy">© <span id="y"></span> Curt Elbow</div>
     </div>
   </footer>
 
-  <script>
-    (function(){
-      const enterBtn = document.getElementById('enterBtn');
-      const intro    = document.getElementById('introVideo');
-      const trans    = document.getElementById('transVideo');
-      const stage    = document.getElementById('stage');
+<script>
+  (function(){
+    // Toggle if you want to hide tagline without editing HTML
+    const SHOW_TAGLINE = true;
+    const tagline = document.getElementById('tagline');
+    if (!SHOW_TAGLINE && tagline) tagline.remove();
 
-      // Show "Enter" shortly after load
-      window.addEventListener('load', () => {
-        setTimeout(()=> enterBtn.classList.add('show'), 900);
-      });
+    const enterBtn = document.getElementById('enterBtn');
+    const intro    = document.getElementById('introVideo');
+    const trans    = document.getElementById('transVideo');
+    const stage    = document.getElementById('stage');
 
-      // Keep intro's last frame visible when it ends (no loop)
-      intro.addEventListener('ended', () => {
-        try{
-          intro.currentTime = Math.max(0, intro.duration - 0.05);
-          intro.pause();
-        }catch(e){}
-      });
+    // Reveal timing
+    window.addEventListener('load', () => { setTimeout(()=> enterBtn.classList.add('show'), 900); });
 
-      // Enter → smooth scroll + play transition
-      enterBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        document.getElementById('menu').scrollIntoView({behavior:'smooth'});
-        // start playing the transition video once in view
-        const play = () => trans.play().catch(()=>{});
-        if ('IntersectionObserver' in window){
-          const io = new IntersectionObserver((ents)=>{
-            ents.forEach(ent=>{
-              if (ent.isIntersecting){ play(); io.disconnect(); }
-            });
-          },{threshold:.35});
-          io.observe(stage);
-        }else{
-          play();
-        }
-      });
+    // Hold the last frame of intro (no loop)
+    intro.addEventListener('ended', () => {
+      try{ intro.currentTime = Math.max(0, intro.duration - 0.05); intro.pause(); }catch(e){}
+    });
 
-      // When transition video ends, freeze on last frame and darken background
-      trans.addEventListener('ended', () => {
-        try{
-          trans.currentTime = Math.max(0, trans.duration - 0.05);
-          trans.pause();
-        }catch(e){}
-        stage.classList.add('darker');
-      });
-    })();
+    // Enter scroll + play transition
+    enterBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('menu').scrollIntoView({behavior:'smooth'});
+      const play = () => trans.play().catch(()=>{});
+      if ('IntersectionObserver' in window){
+        const io = new IntersectionObserver((ents)=>{
+          ents.forEach(ent=>{ if (ent.isIntersecting){ play(); io.disconnect(); } });
+        },{threshold:.35});
+        io.observe(stage);
+      } else { play(); }
+    });
 
+    // After transition, freeze frame + darken
+    trans.addEventListener('ended', () => {
+      try{ trans.currentTime = Math.max(0, trans.duration - 0.05); trans.pause(); }catch(e){}
+      stage.classList.add('darker');
+    });
+
+    // Footer year
     document.getElementById('y').textContent = new Date().getFullYear();
-  </script>
+  })();
+</script>
 </body>
 </html>
