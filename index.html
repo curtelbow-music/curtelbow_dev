@@ -13,7 +13,7 @@
 <style>
   :root{
     --bg:#0b0b0b; --fg:#f5f5f5; --accent:#32cd32;
-    --taglineSize: clamp(12px,2.2vw,16px);
+    --taglineSize: clamp(28px,4.5vw,80px);
   }
   *{box-sizing:border-box}
   html,body{height:100%;margin:0;background:var(--bg);color:var(--fg)}
@@ -23,17 +23,47 @@
   /* ===== HERO ===== */
   .hero{position:relative;height:100svh;display:grid;place-items:center;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.08)}
   .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.9;filter:contrast(1.06) saturate(1.05)}
-  .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.65) 70%);pointer-events:none}
+  .hero::after{content:"";position:absolute;inset:0;background:radial-gradient(1200px 600px at 50% 60%, rgba(0,0,0,.2), rgba(0,0,0,.8) 72%);pointer-events:none}
   .hero__content{position:relative;z-index:2;text-align:center;padding:24px}
-  .brand{font-family:'Permanent Marker',cursive;letter-spacing:1px;margin:0 0 6px;font-size:clamp(28px,6vw,64px);text-shadow:0 12px 36px rgba(0,0,0,.55)}
-  #tagline{margin:0 0 18px;opacity:.0;transform:translateY(6px);font-size:var(--taglineSize);color:#cfeecf}
-  .enter{display:inline-flex;align-items:center;gap:10px;color:#000;background:var(--accent);border:2px solid var(--accent);border-radius:999px;padding:12px 18px;font-weight:900;letter-spacing:.4px;box-shadow:0 8px 26px rgba(50,205,50,.25);opacity:0;transform:translateY(6px);transition:opacity .3s ease,transform .3s ease}
+  .brand{font-family:'Permanent Marker',cursive;letter-spacing:1px;margin:0 0 8px;font-size:clamp(32px,6vw,72px);text-shadow:0 12px 36px rgba(0,0,0,.55);opacity:0;transform:translateY(-24px);animation:fadeDown 1s ease forwards .2s}
+
+  /* ===== HIP-HOP TAGLINE (word-by-word) ===== */
+  .tagline{
+    display:inline-block; margin-top:.6em; text-transform:uppercase;
+    font-family:'Permanent Marker',cursive; font-weight:900; letter-spacing:3px; line-height:1.08; text-align:center;
+  }
+  .tagline .word{
+    display:inline-block;
+    opacity:0; transform:translateY(22px);
+    font-size:var(--taglineSize);
+    color:transparent;
+    -webkit-text-stroke: 2px var(--accent); text-stroke: 2px var(--accent);
+    text-shadow:0 0 18px rgba(50,205,50,.35), 0 0 42px rgba(50,205,50,.2);
+    animation:wordFadeUp .7s ease forwards; /* delay is set via JS */
+    will-change:transform,opacity;
+    margin:0 .15ch;
+  }
+  /* Optional glow pulse (toggled by JS class) */
+  .tagline.glow .word{ animation:wordFadeUp .7s ease forwards, glowPulse 2.6s ease-in-out infinite; }
+
+  /* ENTER button */
+  .enter{
+    display:inline-flex;align-items:center;gap:10px;
+    color:#000;background:var(--accent);border:2px solid var(--accent);
+    border-radius:999px;padding:12px 18px;font-weight:900;letter-spacing:.4px;
+    box-shadow:0 8px 26px rgba(50,205,50,.25);
+    opacity:0; transform:translateY(8px); transition:opacity .3s ease,transform .3s ease;
+  }
   .enter.show{opacity:1;transform:none}
-  .enter:hover{filter:brightness(1.05)}
-  .fade-in{animation:fadeUp .45s ease forwards}
-  .delay-1{animation-delay:.6s}
-  .delay-2{animation-delay:1.1s}
-  @keyframes fadeUp{to{opacity:1;transform:none}}
+  .enter:hover{filter:brightness(1.08)}
+
+  /* Keyframes */
+  @keyframes fadeDown{to{opacity:1;transform:none}}
+  @keyframes wordFadeUp{to{opacity:1;transform:none}}
+  @keyframes glowPulse{
+    0%,100%{text-shadow:0 0 12px rgba(50,205,50,.3),0 0 28px rgba(50,205,50,.2)}
+    50%{text-shadow:0 0 24px rgba(50,205,50,.6),0 0 48px rgba(50,205,50,.4)}
+  }
 
   /* ===== TRANSITION + MENU ===== */
   #menu{position:relative;min-height:100svh}
@@ -44,7 +74,7 @@
 
   .menu{position:relative;z-index:2;height:100%;display:grid;align-items:center;padding:clamp(16px,4vw,40px)}
   .menu-inner{display:flex;gap:clamp(24px,5vw,48px);align-items:flex-start}
-  .menu-left{flex:0 0 32ch; max-width:40vw}
+  .menu-left{flex:0 0 32ch;max-width:40vw}
   .menu-list{display:flex;flex-direction:column;gap:clamp(6px,1.4vw,16px)}
   .menu-link{--stroke: var(--accent); color:var(--fg); font-family:'Permanent Marker',cursive; text-transform:uppercase;letter-spacing:.5px; font-size:clamp(44px,9.5vw,116px); line-height:.9; transition:transform .15s ease,color .15s ease, text-shadow .15s ease; text-shadow:0 0 0 rgba(0,0,0,0)}
   .menu-link.stroke{color:transparent;-webkit-text-stroke:clamp(2px,.6vw,8px) var(--stroke); text-stroke:clamp(2px,.6vw,8px) var(--stroke)}
@@ -72,9 +102,19 @@
   <header class="hero" id="top">
     <video id="introVideo" src="./media/green_intro.mp4" muted playsinline autoplay preload="auto"></video>
     <div class="hero__content">
-      <h1 class="brand fade-in delay-1">CURT ELBOW</h1>
-      <!-- Tagline (edit the text here, or remove the line to hide) -->
-      <p id="tagline" class="fade-in delay-2">ENTER THE CULTURE OF UNAPOLOGETIC TRAP WORSHIP</p>
+      <h1 class="brand">CURT ELBOW</h1>
+
+      <!-- Big, staggered tagline -->
+      <div id="tagline" class="tagline">
+        <span class="word">ENTER</span>
+        <span class="word">THE</span>
+        <span class="word">CULTURE</span>
+        <span class="word">OF</span>
+        <span class="word">UNAPOLOGETIC</span>
+        <span class="word">TRAP</span>
+        <span class="word">WORSHIP</span>
+      </div>
+
       <a id="enterBtn" class="enter" href="#menu">Enter ↓</a>
     </div>
   </header>
@@ -89,7 +129,7 @@
           <div class="menu-left">
             <nav class="menu-list" aria-label="Main">
               <a class="menu-link stroke" href="#music">Music</a>
-              <a class="menu-link"        href="./video/">Video</a>
+              <a class="menu-link"        href="/video/">Video</a>
               <a class="menu-link"        href="#merch">Merch</a>
               <a class="menu-link stroke" href="#about">About</a>
               <a class="menu-link"        href="#connect">Connect</a>
@@ -128,20 +168,53 @@
 
 <script>
   (function(){
-    // Toggle if you want to hide tagline without editing HTML
-    const SHOW_TAGLINE = true;
-    const tagline = document.getElementById('tagline');
-    if (!SHOW_TAGLINE && tagline) tagline.remove();
+    // ===== OPTIONS =====
+    const SYNC_TO_VIDEO = true;     // <- set false to use fixed delays below
+    const TOTAL_TAGLINE_DURATION = 3.2; // seconds (used when SYNC_TO_VIDEO=false)
+    const ENTER_OFFSET = 0.4;       // seconds after last word to show Enter
+    const ENABLE_GLOW = true;       // toggle green pulse glow on the tagline
 
+    const intro = document.getElementById('introVideo');
+    const trans = document.getElementById('transVideo');
+    const stage = document.getElementById('stage');
     const enterBtn = document.getElementById('enterBtn');
-    const intro    = document.getElementById('introVideo');
-    const trans    = document.getElementById('transVideo');
-    const stage    = document.getElementById('stage');
+    const tagline = document.getElementById('tagline');
+    const words = Array.from(document.querySelectorAll('#tagline .word'));
 
-    // Reveal timing
-    window.addEventListener('load', () => { setTimeout(()=> enterBtn.classList.add('show'), 900); });
+    // Optional glow
+    if (ENABLE_GLOW) tagline.classList.add('glow');
 
-    // Hold the last frame of intro (no loop)
+    // Compute staggered delays
+    function scheduleWordDelays(totalSeconds){
+      const count = words.length;
+      const per = Math.max(0.18, (totalSeconds / (count + 0.5))); // keep snappy
+      let lastDelay = 0;
+      words.forEach((w,i)=>{
+        const d = (i+1) * per;
+        w.style.animationDelay = `${d.toFixed(3)}s`;
+        lastDelay = d;
+      });
+      // Show Enter after last word
+      setTimeout(()=> enterBtn.classList.add('show'), (lastDelay + ENTER_OFFSET) * 1000);
+    }
+
+    // Use video duration if available
+    function initDelays(){
+      if (SYNC_TO_VIDEO && isFinite(intro.duration) && intro.duration > 0){
+        // reserve a little time before the end (aesthetic)
+        const usable = Math.max(1.6, intro.duration - 0.6);
+        scheduleWordDelays(usable);
+      } else {
+        scheduleWordDelays(TOTAL_TAGLINE_DURATION);
+      }
+    }
+
+    // When metadata ready, compute exact timing
+    intro.addEventListener('loadedmetadata', initDelays, { once:true });
+    // Fallback if metadata is slow
+    setTimeout(()=>{ if(!words[0].style.animationDelay) initDelays(); }, 400);
+
+    // Freeze intro on last frame (no loop)
     intro.addEventListener('ended', () => {
       try{ intro.currentTime = Math.max(0, intro.duration - 0.05); intro.pause(); }catch(e){}
     });
